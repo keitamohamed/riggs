@@ -2,6 +2,7 @@ package com.keita.riggs.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Room {
     @NotBlank(message = "Enter room size")
     private String size;
 
+    @Valid
     @OneToOne(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "room")
     private RoomDetail room;

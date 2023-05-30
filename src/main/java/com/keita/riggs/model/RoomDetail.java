@@ -26,7 +26,7 @@ public class RoomDetail {
     @NotBlank(message = "Is smoking allow in the room")
     private String smoking;
     @NotBlank(message = "Bathroom desc")
-    private String bathroom;
+     private String bathroom;
     @NotBlank(message = "Does room have tv")
     private String tv;
     @NotBlank(message = "Enter number of bed")
