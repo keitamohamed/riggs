@@ -42,13 +42,13 @@ public class RoomController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> updateRoom(
-            @PathVariable
-            Long id,
+            @Valid
             @RequestBody
-            Room room
+            Room room,
+            BindingResult bindingResult
     )
     {
-        return service.updateRoom(id, room);
+        return service.updateRoom(room, bindingResult);
 
     }
 
@@ -68,6 +68,5 @@ public class RoomController {
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
         return service.deleteRoom(id);
     }
-
 
 }

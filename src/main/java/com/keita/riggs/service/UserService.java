@@ -2,10 +2,11 @@ package com.keita.riggs.service;
 
 import com.keita.riggs.handler.ErrorMessage;
 import com.keita.riggs.handler.InvalidInput;
-import com.keita.riggs.handler.RoomExceptHandler;
+import com.keita.riggs.handler.ExceptHandler;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Address;
 import com.keita.riggs.model.User;
+import com.keita.riggs.repo.AddressRepo;
 import com.keita.riggs.repo.UserRepo;
 import com.keita.riggs.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,10 +23,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepo userRepo;
+    private final AddressRepo addressRepo;
 
     @Autowired
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, AddressRepo addressRepo) {
         this.userRepo = userRepo;
+        this.addressRepo = addressRepo;
     }
 
     public ResponseEntity<?> save (User user, BindingResult result) {
@@ -47,21 +50,28 @@ public class UserService {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updateUser(Long id, User user) {
-        Optional<User> getUser = isUserExist(id);
-        ResponseEntity<ResponseMessage> responseMessage1 = userDoesNotExist(id);
+    public ResponseEntity<?> updateUser(User user, BindingResult result) {
+        Optional<User> getUser = isUserExist(user.getUserID());
+        ResponseEntity<ResponseMessage> responseMessage1 = userDoesNotExist(user.getUserID());
         if (getUser.isEmpty()) {
             return responseMessage1;
         }
+
+        if (result.hasErrors()) {
+            return InvalidInput.userError(result, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         getUser.ifPresent(u -> {
             u.setFirstName(user.getFirstName());
             u.setFirstName(user.getLastName());
             u.setEmail(user.getEmail());
             u.setPhoneNum(user.getPhoneNum());
-
         });
+
+        addressRepo.save(user.getAddress());
+
         User updated = userRepo.save(getUser.get());
-        String message = String.format("Information updated for %s,  id %s", (updated.getFirstName() + " " + updated.getLastName()), updated.getUserID());
+        String message = String.format("Information updated for %s, id %s", (updated.getFirstName() + " " + updated.getLastName()), updated.getUserID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
@@ -70,7 +80,7 @@ public class UserService {
         String message = "No user found with an id " + id;
         return userRepo.findById(id)
                 .map(Optional::of)
-                .orElseThrow(() -> new RoomExceptHandler(HttpStatus.UNPROCESSABLE_ENTITY, response, message));
+                .orElseThrow(() -> new ExceptHandler(HttpStatus.UNPROCESSABLE_ENTITY, response, message));
     }
 
     public List<User> userList(HttpServletResponse response) {

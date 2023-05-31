@@ -6,6 +6,7 @@ import com.keita.riggs.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -43,13 +44,13 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> updateUser(
-            @PathVariable
-            Long id,
+            @Valid
             @RequestBody
-            User user
+            User user,
+            BindingResult bindingResult
     )
     {
-        return service.updateUser(id, user);
+        return service.updateUser(user, bindingResult);
 
     }
 

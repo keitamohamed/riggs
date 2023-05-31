@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Booking")
+@Table(name = "booking")
 public class Booking {
     @Id
     @Column(nullable = false)
@@ -24,7 +24,7 @@ public class Booking {
     @Valid
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "userID")
-    @JsonBackReference(value = "booking")
+    @JsonBackReference(value = "roomBook")
     private User user;
 
     @Valid

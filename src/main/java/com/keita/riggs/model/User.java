@@ -36,7 +36,7 @@ public class User {
     private Address address;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "booking")
-    private Booking booking;
+    @JsonManagedReference(value = "roomBook")
+    private Booking roomBook;
 
 }
