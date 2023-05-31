@@ -16,6 +16,7 @@ import lombok.Setter;
 @Table(name = "detail")
 public class RoomDetail {
     @Id
+    @Column(nullable = false)
     private long id;
     @NotBlank(message = "Enter room view")
     private String view;
@@ -33,7 +34,7 @@ public class RoomDetail {
     private String numberOfBed;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "roomID")
     @JsonBackReference(value = "room")
     private Room room;
 }

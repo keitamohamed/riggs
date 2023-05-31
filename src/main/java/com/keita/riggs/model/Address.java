@@ -16,6 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Address {
     @Id
+    @Column(nullable = false)
     private long id;
     @NotBlank(message = "Enter street name")
     private String street;
@@ -24,12 +25,12 @@ public class Address {
     @NotBlank(message = "Enter state")
     private String state;
     @Size(min = 5, max = 5, message = "Zip code must be a five digit number")
-    @NotBlank(message = "Enter zip cod")
-    private int zipcode;
+    @NotBlank(message = "Enter a zipcode")
+    private String zipcode;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "id")
-    @JsonBackReference(value = "user")
+    @JoinColumn(name = "userID")
+    @JsonBackReference(value = "address")
     private User user;
 
 }

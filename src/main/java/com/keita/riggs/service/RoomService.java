@@ -2,7 +2,6 @@ package com.keita.riggs.service;
 
 import com.keita.riggs.handler.ErrorMessage;
 import com.keita.riggs.handler.InvalidInput;
-import com.keita.riggs.handler.MessageHandler;
 import com.keita.riggs.handler.RoomExceptHandler;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Room;
@@ -36,16 +35,16 @@ public class RoomService {
         while (isRoomExist(roomID).isPresent()) {
             roomID = Util.generateID(9999999);
         }
-        room.setId(roomID);
+        room.setRoomID(roomID);
         Room saveResult = roomRepo.save(room);
-        String message = String.format("New room have been added with an id %s ", saveResult.getId());
+        String message = String.format("New room have been added with an id %s ", saveResult.getRoomID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
     public ResponseEntity<?> updateRoom(Long id, Room room) {
         Optional<Room> result = isRoomExist(id);
-        ResponseEntity<ResponseMessage> responseMessage1 = roomDoesNotExist(id, result);
+        ResponseEntity<ResponseMessage> responseMessage1 = roomDoesNotExist(id);
         if (result.isEmpty()) {
             return responseMessage1;
         }
@@ -56,12 +55,12 @@ public class RoomService {
 
         });
         Room updated = roomRepo.save(result.get());
-        String message = String.format("%s room with an id %s have been updated", updated.getRoomName(), updated.getId());
+        String message = String.format("%s room with an id %s have been updated", updated.getRoomName(), updated.getRoomID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    private static ResponseEntity<ResponseMessage> roomDoesNotExist(Long id, Optional<Room> result) {
+    private static ResponseEntity<ResponseMessage> roomDoesNotExist(Long id) {
         String message = String.format("No room exist with an id %s", id);
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
@@ -87,7 +86,7 @@ public class RoomService {
 
     public ResponseEntity<?> deleteRoom (Long id) {
         Optional<Room> findRoom = isRoomExist(id);
-        ResponseEntity<ResponseMessage> responseMessage1 = roomDoesNotExist(id, findRoom);
+        ResponseEntity<ResponseMessage> responseMessage1 = roomDoesNotExist(id);
         if (findRoom.isEmpty()) {
             return responseMessage1;
         }

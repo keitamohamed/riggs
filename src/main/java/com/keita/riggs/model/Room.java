@@ -16,7 +16,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Room {
     @Id
-    private long id;
+    @Column(nullable = false)
+    private long roomID;
     @NotBlank(message = "Enter room name")
     private String roomName;
     @NotBlank(message = "Enter room description")
@@ -28,5 +29,9 @@ public class Room {
     @OneToOne(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "room")
     private RoomDetail room;
+
+    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "booking")
+    private Booking booking;
 
 }

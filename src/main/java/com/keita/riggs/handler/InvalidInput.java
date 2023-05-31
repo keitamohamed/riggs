@@ -26,9 +26,7 @@ public class InvalidInput extends RuntimeException{
         int index = 0;
         boolean roomErrors = false;
         for (FieldError error : bindingResult.getFieldErrors()) {
-            System.out.println("Error here " + error.getField().trim());
             if (error.getField().contains("room")) {
-                System.out.println("Error here " + error.getField().trim());
                 String replace = error.getField().trim().replace("room["+ index + "].", "");
                 roomError.put(replace, error.getDefaultMessage());
                 count += 1;
@@ -43,6 +41,37 @@ public class InvalidInput extends RuntimeException{
         }
         if (roomErrors) {
             errorMap.put("room", roomError);
+        }
+        message.put("error", errorMap);
+        return new ResponseEntity<>(message, status);
+    }
+
+    public static ResponseEntity<Object> userError (BindingResult bindingResult, HttpStatus status) {
+        Map<String, Object> message = new HashMap<>();
+        Map<String, Object> errorMap = new HashMap<>();
+        Map<String, String> userError = new HashMap<>();
+
+        message.put("status", status.name());
+        message.put("code", String.valueOf(status.value()));
+        int count = 0;
+        int index = 0;
+        boolean userErrors = false;
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            if (error.getField().contains("address")) {
+                String replace = error.getField().trim().replace("address["+ index + "].", "");
+                userError.put(replace, error.getDefaultMessage());
+                count += 1;
+                userErrors = true;
+            } else {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+            if (count == 7) {
+                count = 0;
+                index++;
+            }
+        }
+        if (userErrors) {
+            errorMap.put("address", userError);
         }
         message.put("error", errorMap);
         return new ResponseEntity<>(message, status);

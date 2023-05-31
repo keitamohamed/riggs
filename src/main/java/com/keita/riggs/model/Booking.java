@@ -1,9 +1,9 @@
 package com.keita.riggs.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,11 +18,18 @@ import lombok.Setter;
 @Table(name = "Booking")
 public class Booking {
     @Id
-    private long id;
-    @Column(updatable = false, unique = true)
-    @NotBlank(message = "Room id is missing")
-    private long roomId;
-    @Column(updatable = false, unique = true)
-    @NotBlank(message = "User id is missing")
-    private long userID;
+    @Column(nullable = false)
+    private long bookingID;
+
+    @Valid
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "userID")
+    @JsonBackReference(value = "booking")
+    private User user;
+
+    @Valid
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "roomID")
+    @JsonBackReference(value = "booking")
+    private Room room;
 }
