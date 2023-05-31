@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -35,8 +37,16 @@ public class User {
     @JsonManagedReference(value = "address")
     private Address address;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "roomBook")
-    private Booking roomBook;
+    private List<Booking> roomBook;
+
+    public void addNewBooking(Booking booking) {
+        add(booking);
+    }
+
+    private void add(Booking booking) {
+        roomBook.add(booking);
+    }
 
 }

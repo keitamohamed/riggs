@@ -33,9 +33,10 @@ public class BookingController {
             @Valid
             @RequestBody
             Booking booking,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            HttpServletResponse servletResponse
     ) {
-        return bookingService.save(booking, bindingResult);
+        return bookingService.save(booking, bindingResult, servletResponse);
     }
 
     @GetMapping(path = {"/find-by-id/{bookingID}"})

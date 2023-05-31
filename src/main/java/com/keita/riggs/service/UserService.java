@@ -104,8 +104,14 @@ public class UserService {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    public Optional<User> isUserExist(Long id) {
+    private Optional<User> isUserExist(Long id) {
         return userRepo.findById(id);
+    }
+
+    public User getUser(Long id, HttpServletResponse response) {
+        Optional<User> user = isUserExist(id);
+        String message = String.format("No user exist with an id %s ", id);
+        return user.orElseThrow(() -> new ExceptHandler(HttpStatus.OK, response, message));
     }
 
     private static ResponseEntity<ResponseMessage> userDoesNotExist(Long id) {

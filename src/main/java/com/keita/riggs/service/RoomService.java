@@ -5,6 +5,7 @@ import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.handler.ExceptHandler;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Room;
+import com.keita.riggs.model.User;
 import com.keita.riggs.repo.RoomDetailRepo;
 import com.keita.riggs.repo.RoomRepo;
 import com.keita.riggs.util.Util;
@@ -91,8 +92,14 @@ public class RoomService {
         }
         return rooms;
     }
-    public Optional<Room> isRoomExist(Long id) {
+    private Optional<Room> isRoomExist(Long id) {
         return roomRepo.findById(id);
+    }
+
+    public Room getRoom(Long id, HttpServletResponse response) {
+        Optional<Room> findRoom = isRoomExist(id);
+        String message = String.format("No room exist with an id %s ", id);
+        return findRoom.orElseThrow(() -> new ExceptHandler(HttpStatus.OK, response, message));
     }
 
     public ResponseEntity<?> deleteRoom (Long id) {

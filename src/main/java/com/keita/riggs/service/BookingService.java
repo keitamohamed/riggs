@@ -1,7 +1,6 @@
 package com.keita.riggs.service;
 
 import com.keita.riggs.handler.ErrorMessage;
-import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.handler.ExceptHandler;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Booking;
@@ -23,16 +22,20 @@ import java.util.Optional;
 public class BookingService {
 
     private final BookingRepo bookingRepo;
+    private final RoomService roomService;
+    private final UserService userService;
 
     @Autowired
-    public BookingService(BookingRepo bookingRepo) {
+    public BookingService(BookingRepo bookingRepo, RoomService roomService, UserService userService) {
         this.bookingRepo = bookingRepo;
+        this.roomService = roomService;
+        this.userService = userService;
     }
 
-    public ResponseEntity<?> save (Booking booking, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return InvalidInput.userError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+    public ResponseEntity<?> save (Booking booking, BindingResult bindingResult, HttpServletResponse servletResponse) {
+//        if (bindingResult.hasErrors()) {
+//            return InvalidInput.userError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
+//        }
 
         long bookingID = Util.generateID(9999999);
         while (isBookingExist(bookingID).isPresent()) {
@@ -40,13 +43,22 @@ public class BookingService {
         }
 
         booking.setBookingID(bookingID);
-        User user = booking.getUser();
-        user.setRoomBook(booking);
 
-        Room room = booking.getRoom();
-        room.setBooking(booking);
+        User user = userService.getUser(booking.getUser().getUserID(), servletResponse);
+        booking.setUser(user);
 
-        String message = String.format("New booking have been created with an id %s", booking.getBookingID());
+        Room room = roomService.getRoom(booking.getRoom().getRoomID(), servletResponse);
+        booking.setRoom(room);
+
+        Booking bookingResult = bookingRepo.save(booking);
+
+        user.addNewBooking(bookingResult);
+        room.addNewBooking(bookingResult);
+
+        userService.updateUser(user, bindingResult);
+        roomService.updateRoom(room, bindingResult);
+
+        String message = String.format("New booking have been created with an id %s", bookingResult.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
