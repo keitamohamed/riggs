@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
 public interface RoomRepo extends CrudRepository<Room, Long> {
 
     @NotNull

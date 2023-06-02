@@ -28,7 +28,7 @@ public class Room {
     private String size;
 
     @Valid
-    @OneToOne(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "room")
     private RoomDetail room;
 

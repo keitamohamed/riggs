@@ -5,6 +5,7 @@ import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.handler.ExceptHandler;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Address;
+import com.keita.riggs.model.Authenticate;
 import com.keita.riggs.model.User;
 import com.keita.riggs.repo.AddressRepo;
 import com.keita.riggs.repo.UserRepo;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -24,11 +26,13 @@ public class UserService {
 
     private final UserRepo userRepo;
     private final AddressRepo addressRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepo userRepo, AddressRepo addressRepo) {
+    public UserService(UserRepo userRepo, AddressRepo addressRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.addressRepo = addressRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public ResponseEntity<?> save (User user, BindingResult result) {
@@ -39,13 +43,23 @@ public class UserService {
         while (isUserExist(userID).isPresent()) {
             userID = Util.generateID(9999999);
         }
+
         user.setUserID(userID);
+
         Address address = user.getAddress();
         address.setId(Util.generateID(9999999));
         address.setUser(user);
+
+        setAuthenticate(user);
+        Authenticate authenticate = user.getAuth();
+        authenticate.setPassword(passwordEncoder.encode(authenticate.getPassword()));
+
         user.setAddress(address);
+        user.setAuth(authenticate);
+
         User saveResult = userRepo.save(user);
-        String message = String.format("New user have been added with an id %s ", saveResult.getUserID());
+
+        String message = String.format("New account have been created %s ", saveResult.getUserID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
@@ -112,6 +126,17 @@ public class UserService {
         Optional<User> user = isUserExist(id);
         String message = String.format("No user exist with an id %s ", id);
         return user.orElseThrow(() -> new ExceptHandler(HttpStatus.OK, response, message));
+    }
+
+    private void setAuthenticate(User user) {
+        Authenticate authenticate = user.getAuth();
+        authenticate.setAuth(user);
+        authenticate.setAuthID(Util.generateID(9999999));
+        authenticate.setRole("User");
+        authenticate.setAccountNonExpired(true);
+        authenticate.setAccountNotLocked(true);
+        authenticate.setCredentialsNonExpired(true);
+        authenticate.setEnabled(true);
     }
 
     private static ResponseEntity<ResponseMessage> userDoesNotExist(Long id) {

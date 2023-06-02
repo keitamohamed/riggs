@@ -33,9 +33,6 @@ public class BookingService {
     }
 
     public ResponseEntity<?> save (Booking booking, BindingResult bindingResult, HttpServletResponse servletResponse) {
-//        if (bindingResult.hasErrors()) {
-//            return InvalidInput.userError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
-//        }
 
         long bookingID = Util.generateID(9999999);
         while (isBookingExist(bookingID).isPresent()) {

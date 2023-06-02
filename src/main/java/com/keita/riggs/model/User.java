@@ -33,6 +33,11 @@ public class User {
     private String phoneNum;
 
     @Valid
+    @OneToOne(mappedBy = "auth", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "auth")
+    private Authenticate auth;
+
+    @Valid
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "address")
     private Address address;
