@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class JwtToken {
                         .create()
                         .withSubject(username)
                         .withIssuedAt(new Date(System.currentTimeMillis()))
-                        .withExpiresAt(new Date(System.currentTimeMillis() + securityConfig.getAccessTokenExpirationDateInt()))
+                        .withExpiresAt(securityConfig.accessTokenExpireDate())
                         .withIssuer(request.getRequestURI())
                         .withClaim(
                                 "roles",
@@ -42,20 +42,7 @@ public class JwtToken {
                 );
     }
 
-    public String getJwtAccessToken(HttpServletRequest request) {
-        Cookie[] cookie = request.getCookies();
-        if (cookie != null) {
-            return Arrays.stream(cookie)
-                    .filter(c -> c.getName().equals("accessToken"))
-                    .map(Cookie::getValue)
-                    .findFirst()
-                    .orElse(null);
-        }
-        return null;
-    }
-
-
-    public Cookie getCookie(String token, String tokenName, String username, int maxAge) {
+    public Cookie getCookie(String token, String tokenName) {
         Cookie cookie = new Cookie(tokenName, token);
         if(tokenName.equals("refreshToken")) {
             cookie.setHttpOnly(false);
@@ -65,7 +52,7 @@ public class JwtToken {
             cookie.setSecure(true);
         }
         cookie.setPath("/");
-        cookie.setMaxAge(securityConfig.getRefreshTokenExpirationDateInt());
+        cookie.setMaxAge(cookie.getMaxAge());
         return cookie;
     }
 
@@ -75,9 +62,17 @@ public class JwtToken {
                         .create()
                         .withSubject(username)
                         .withIssuedAt(new Date(System.currentTimeMillis()))
-                        .withExpiresAt(new Date(System.currentTimeMillis() + securityConfig.getAccessTokenExpirationDateInt()))
+                        .withExpiresAt(securityConfig.refreshTokenExpireDate())
                         .withIssuer(request.getRequestURI())
                         .sign(algorithm)
                 );
+    }
+
+    public String getJwtFormRequest(HttpServletRequest request) {
+        String authorization = request.getHeader(securityConfig.getAuthorizationHeader());
+        if (StringUtils.hasText(authorization) && authorization.startsWith(securityConfig.getTokenPrefix() + " ")) {
+            return (authorization.replace(securityConfig.getTokenPrefix(),"").replaceAll("\\s+", ""));
+        }
+        return null;
     }
 }

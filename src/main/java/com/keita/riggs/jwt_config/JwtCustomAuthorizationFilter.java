@@ -18,10 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -43,8 +40,7 @@ public class JwtCustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String jwt = jwtToken.getJwtAccessToken(request);
-
+        String jwt = jwtToken.getJwtFormRequest(request);
         if (StringUtils.hasText(jwt) && doesRequestHeaderExist(request) && getDecodedJWT(jwt, response) != null) {
             DecodedJWT decodedJWT = getDecodedJWT(jwt, response);
             assert decodedJWT != null;
@@ -62,7 +58,7 @@ public class JwtCustomAuthorizationFilter extends OncePerRequestFilter {
     private DecodedJWT getDecodedJWT(String token, HttpServletResponse response) throws IOException {
 
         try {
-            Algorithm algorithm = Algorithm.HMAC256(securityConfig.getSecurityKey().getBytes());
+            Algorithm algorithm = Algorithm.HMAC256(Base64.getDecoder().decode(securityConfig.getSecurityKey()));
             JWTVerifier verifier = JWT.require(algorithm).build();
             return verifier.verify(token);
         }catch (Exception exception) {

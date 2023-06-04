@@ -4,11 +4,11 @@ import com.keita.riggs.jwt_config.CustomAuthenticationFilter;
 import com.keita.riggs.jwt_config.JwtCustomAuthorizationFilter;
 import com.keita.riggs.jwt_config.JwtToken;
 import com.keita.riggs.jwt_config.SecurityConfig;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,9 +16,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.keita.riggs.permission.UserRole.*;
+import static com.keita.riggs.permission.UserPermission.*;
+
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 @EnableMethodSecurity
 public class ApplicationSecurity {
 
@@ -26,35 +28,48 @@ public class ApplicationSecurity {
     private final SecurityConfig securityConfig;
     private final JwtToken jwtToken;
     private final JwtCustomAuthorizationFilter jwtCustomAuthorizationFilter;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationConfiguration authenticationConfiguration;
+
+    @Autowired
+    public ApplicationSecurity(AuthenticationProvider authenticationProvider,
+                               SecurityConfig securityConfig, JwtToken jwtToken,
+                               JwtCustomAuthorizationFilter jwtCustomAuthorizationFilter,
+                               AuthenticationConfiguration authenticationConfiguration) {
+        this.authenticationProvider = authenticationProvider;
+        this.securityConfig = securityConfig;
+        this.jwtToken = jwtToken;
+        this.jwtCustomAuthorizationFilter = jwtCustomAuthorizationFilter;
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
 
     private static final String[] PUBLIC_ACCESS = {
-            "/riggs/user/**"
+            "/riggs/user/add"
     };
 
     private static final String[] PRIVATE_ACCESS = {
-            "/riggs/room/**"
+            "/riggs/room/list",
+            "/riggs/room/find-by-id/**",
+            "/riggs/user/**",
+            "/riggs/booking/add",
+            "/riggs/booking/find-by-id/**",
+            "/riggs/booking/list-of-booking",
     };
-
-//    public ApplicationSecurity(AuthenticationProvider authenticationProvider, SecurityConfig securityConfig, JwtToken jwtToken, JwtCustomAuthorizationFilter jwtCustomAuthorizationFilter) {
-//        this.authenticationProvider = authenticationProvider;
-//        this.securityConfig = securityConfig;
-//        this.jwtToken = jwtToken;
-//        this.jwtCustomAuthorizationFilter = jwtCustomAuthorizationFilter;
-//    }
-
+    private static final String[] ADMIN_ACCESS = {
+            "/riggs/room/**",
+            "/riggs/booking/**",
+            "/riggs/admin/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthorizationFilter = new CustomAuthenticationFilter(securityConfig , jwtToken, authenticationManager);
-        customAuthorizationFilter.setFilterProcessesUrl("/riggs/login");
         return http.csrf()
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
                        PUBLIC_ACCESS
                 ).permitAll()
-                .requestMatchers(PRIVATE_ACCESS).hasAnyAuthority("USER_ADMIN")
+                .requestMatchers(PRIVATE_ACCESS).hasAnyRole("USER", "ADMIN")
+                .requestMatchers(ADMIN_ACCESS).hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -62,8 +77,15 @@ public class ApplicationSecurity {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider)
+                .addFilter(customAuthenticationFilter())
                 .addFilterBefore(jwtCustomAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
+    }
+
+    public CustomAuthenticationFilter customAuthenticationFilter () throws Exception {
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(securityConfig , jwtToken, authenticationConfiguration.getAuthenticationManager());
+        authenticationFilter.setFilterProcessesUrl("/riggs/login");
+        return authenticationFilter;
     }
 }

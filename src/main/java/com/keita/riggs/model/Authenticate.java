@@ -17,11 +17,13 @@ public class Authenticate {
     @Id
     private Long authID;
     @Email
-    @NotBlank(message = "Email address is required")
+    @Column(updatable = false, unique = true)
+    @NotBlank(message = "Enter email address")
     private String email;
     @Column(columnDefinition = "LONGBLOB")
     @NotBlank(message = "Password is required")
     private String password;
+    @NotBlank(message = "Enter user role")
     private String role;
     private boolean isAccountNonExpired;
     private boolean isAccountNotLocked;

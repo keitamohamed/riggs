@@ -37,6 +37,6 @@ management:
 jwt:
   securityKey: '6E5A7234753778214125432A462D4A614E645267556B58703273357638792F42'
   tokenPrefix: 'Bearer'
-  accessTokenExpirationDateInt: 86400
-  refreshTokenExpirationDateInt: 604800
+  accessTokenExpirationDate: 86400000
+  refreshTokenExpirationDate: 604800000
 

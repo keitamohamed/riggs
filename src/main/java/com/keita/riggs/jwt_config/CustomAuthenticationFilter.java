@@ -8,23 +8,21 @@ import com.keita.riggs.auth_detail.UserAuthDetail;
 import com.keita.riggs.handler.CustomCredentialInputCheck;
 import com.keita.riggs.model.Authenticate;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,39 +31,43 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationFilter {
 
     private final SecurityConfig securityConfig;
+
     private final JwtToken jwtToken;
     private final AuthenticationManager authenticationManager;
 
-    public CustomAuthenticationFilter(SecurityConfig securityConfig, JwtToken jwtToken, @Lazy AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(SecurityConfig securityConfig, JwtToken jwtToken, AuthenticationManager authenticationManager) {
+        super(authenticationManager);
         this.securityConfig = securityConfig;
         this.jwtToken = jwtToken;
         this.authenticationManager = authenticationManager;
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
         try {
             Authenticate authenticationInput = new ObjectMapper()
                     .readValue(request.getInputStream(), Authenticate.class);
             Authentication authentication = new UsernamePasswordAuthenticationToken(authenticationInput.getEmail(), authenticationInput.getPassword());
             if (authenticationInput.getEmail().isEmpty() || authenticationInput.getPassword().isEmpty()) {
-                throw new CustomCredentialInputCheck(authenticationInput, HttpStatus.NOT_ACCEPTABLE, response);
+                throw new CustomCredentialInputCheck(authenticationInput, HttpStatus.UNAUTHORIZED, response);
             }
             return authenticationManager.authenticate(authentication);
         }catch (IOException e) {
-            throw new CustomCredentialInputCheck("You have entered an invalid username or password", HttpStatus.BAD_REQUEST, response);
+            throw new CustomCredentialInputCheck("You have entered an invalid username or password", HttpStatus.UNAUTHORIZED, response);
         }
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        throw new CustomCredentialInputCheck("You have entered an invalid username or password", HttpStatus.BAD_REQUEST, response);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        throw new CustomCredentialInputCheck("You have entered an invalid username or password", HttpStatus.UNAUTHORIZED, response);
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         UserAuthDetail user = (UserAuthDetail) authResult.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256(securityConfig.getSecurityKey().getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(Base64.getDecoder().decode(securityConfig.getSecurityKey()));
         String accessToken = jwtToken.getAccessToken(user.getUsername(), user.getAuthorities(), algorithm, request);
         String refreshToken = jwtToken.getRefreshToken(user.getUsername(), algorithm, request);
 
@@ -78,14 +80,16 @@ public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationF
 
         JWTVerifier verifier = JWT.require(algorithm).build();
 
-        int expireAt = (int)verifier.verify(accessToken).getExpiresAt().getTime();
-        Cookie cookie = jwtToken.getCookie(accessToken, "accessToken", user.getUsername(), expireAt);
+//        int expireAt = (int)verifier.verify(accessToken).getExpiresAt().getTime();
+//        int refExpireAt = (int)verifier.verify(refreshToken).getExpiresAt().getTime();
+        Cookie cookie = jwtToken.getCookie(accessToken, "accessToken");
         response.addCookie(cookie);
-        cookie = jwtToken.getCookie(refreshToken, "refreshToken", user.getUsername(), securityConfig.getRefreshTokenExpirationDateInt());
+        cookie = jwtToken.getCookie(refreshToken, "refreshToken");
         response.addCookie(cookie);
 
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper()
                 .writeValue(response.getOutputStream(), token);
     }
+
 }

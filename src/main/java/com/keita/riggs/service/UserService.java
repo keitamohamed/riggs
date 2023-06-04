@@ -78,7 +78,6 @@ public class UserService {
         getUser.ifPresent(u -> {
             u.setFirstName(user.getFirstName());
             u.setFirstName(user.getLastName());
-            u.setEmail(user.getEmail());
             u.setPhoneNum(user.getPhoneNum());
         });
 
@@ -132,7 +131,6 @@ public class UserService {
         Authenticate authenticate = user.getAuth();
         authenticate.setAuth(user);
         authenticate.setAuthID(Util.generateID(9999999));
-        authenticate.setRole("User");
         authenticate.setAccountNonExpired(true);
         authenticate.setAccountNotLocked(true);
         authenticate.setCredentialsNonExpired(true);

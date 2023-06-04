@@ -10,8 +10,8 @@ import static com.keita.riggs.permission.UserPermission.*;
 
 public enum UserRole {
 
-    ADMIN(Sets.newHashSet(USER_RED, USER_WRITE, USER_CREATE, USER_DELETE, USER_PUT, USER_UPDATE)),
-    USER(Sets.newHashSet(USER_RED, USER_WRITE));
+    ADMIN(Sets.newHashSet(RED, WRITE, CREATE, DELETE, PUT, UPDATE)),
+    USER(Sets.newHashSet(RED, WRITE));
 
     private final Set<UserPermission> userPermissions;
 

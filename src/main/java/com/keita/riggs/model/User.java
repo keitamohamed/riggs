@@ -25,10 +25,6 @@ public class User {
     private String firstName;
     @NotBlank(message = "Enter last name")
     private String lastName;
-    @Email
-    @Column(updatable = false, unique = true)
-    @NotBlank(message = "Enter email address")
-    private String email;
     @NotBlank(message = "Enter phone number")
     private String phoneNum;
 

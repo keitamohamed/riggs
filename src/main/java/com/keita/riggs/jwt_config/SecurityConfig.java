@@ -6,22 +6,32 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "jwt")
-@Component
 @Getter
 @Setter
 public class SecurityConfig {
 
     private String securityKey;
     private String tokenPrefix;
-    private int accessTokenExpirationDateInt;
-    private int refreshTokenExpirationDateInt;
+    private long accessTokenExpirationDate;
+    private long refreshTokenExpirationDate;
 
     public String getAuthorizationHeader() {
         return HttpHeaders.AUTHORIZATION;
+    }
+
+    public Date accessTokenExpireDate() {
+        Date date = new Date();
+        return new Date(date.getTime() + accessTokenExpirationDate);
+    }
+
+    public Date refreshTokenExpireDate() {
+        Date date = new Date();
+        return new Date(date.getTime() + refreshTokenExpirationDate);
     }
 }
