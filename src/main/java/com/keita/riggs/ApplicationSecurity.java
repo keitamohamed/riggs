@@ -57,7 +57,8 @@ public class ApplicationSecurity {
     private static final String[] ADMIN_ACCESS = {
             "/riggs/room/**",
             "/riggs/booking/**",
-            "/riggs/admin/**"
+            "/riggs/admin/**",
+            "/riggs/admin/**/**"
     };
 
     @Bean

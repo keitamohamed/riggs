@@ -99,7 +99,7 @@ public class UserService {
     public List<User> userList(HttpServletResponse response) {
         List<User> users = userRepo.getAllUser();
         if (users.isEmpty()) {
-            throw new ErrorMessage(response, HttpStatus.ACCEPTED, "No user available in the database");
+            new ErrorMessage(response, "No user available in the database");
         }
         return users;
     }

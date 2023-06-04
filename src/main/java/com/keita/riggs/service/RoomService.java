@@ -1,11 +1,10 @@
 package com.keita.riggs.service;
 
 import com.keita.riggs.handler.ErrorMessage;
-import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.handler.ExceptHandler;
+import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Room;
-import com.keita.riggs.model.User;
 import com.keita.riggs.repo.RoomDetailRepo;
 import com.keita.riggs.repo.RoomRepo;
 import com.keita.riggs.util.Util;
@@ -88,7 +87,8 @@ public class RoomService {
     public List<Room> list(HttpServletResponse response) {
         List<Room> rooms = roomRepo.getAllRoom();
         if (rooms.isEmpty()) {
-            throw new ErrorMessage(response, HttpStatus.ACCEPTED, "No data available in the database");
+            new ErrorMessage(response, "No data available in the database");
+            return null;
         }
         return rooms;
     }

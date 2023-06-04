@@ -54,29 +54,22 @@ public class InvalidInput extends RuntimeException{
 
         message.put("status", status.name());
         message.put("code", String.valueOf(status.value()));
-        int count = 0;
         int index = 0;
         boolean userErrors = false;
         for (FieldError error : bindingResult.getFieldErrors()) {
             if (error.getField().contains("address")) {
                 String replace = error.getField().trim().replace("address["+ index + "].", "");
                 addressError.put(replace, error.getDefaultMessage());
-                count += 1;
                 userErrors = true;
             }
             else if (error.getField().contains("auth")) {
                 String replace = error.getField().trim().replace("auth["+ index + "].", "");
                 authError.put(replace, error.getDefaultMessage());
-                count += 1;
                 userErrors = true;
             }
             else {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             }
-//            if (count == 7) {
-//                count = 0;
-//                index++;
-//            }
         }
         if (userErrors && addressError.size() > 0) {
             errorMap.put("address", addressError);

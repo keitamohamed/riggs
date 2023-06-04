@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keita.riggs.auth_detail.UserAuthDetail;
 import com.keita.riggs.handler.CustomCredentialInputCheck;
 import com.keita.riggs.model.Authenticate;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +34,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationFilter {
 
     private final SecurityConfig securityConfig;
-
     private final JwtToken jwtToken;
     private final AuthenticationManager authenticationManager;
 
@@ -67,7 +69,7 @@ public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationF
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         UserAuthDetail user = (UserAuthDetail) authResult.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256(Base64.getDecoder().decode(securityConfig.getSecurityKey()));
+        Algorithm algorithm = Algorithm.HMAC256(encodeSecurityKey());
         String accessToken = jwtToken.getAccessToken(user.getUsername(), user.getAuthorities(), algorithm, request);
         String refreshToken = jwtToken.getRefreshToken(user.getUsername(), algorithm, request);
 
@@ -78,10 +80,6 @@ public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationF
                 .forEach(object -> token.put(object.toString(), object.toString()));
         token.put("refreshToken", refreshToken);
 
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
-//        int expireAt = (int)verifier.verify(accessToken).getExpiresAt().getTime();
-//        int refExpireAt = (int)verifier.verify(refreshToken).getExpiresAt().getTime();
         Cookie cookie = jwtToken.getCookie(accessToken, "accessToken");
         response.addCookie(cookie);
         cookie = jwtToken.getCookie(refreshToken, "refreshToken");
@@ -90,6 +88,10 @@ public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationF
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper()
                 .writeValue(response.getOutputStream(), token);
+    }
+
+    private byte[] encodeSecurityKey() {
+        return Decoders.BASE64.decode(securityConfig.getSecurityKey());
     }
 
 }

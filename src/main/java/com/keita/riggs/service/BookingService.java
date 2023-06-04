@@ -70,7 +70,8 @@ public class BookingService {
     public List<Booking> bookingList(HttpServletResponse response) {
         List<Booking> bookings = bookingRepo.getAllBookingr();
         if (bookings.isEmpty()) {
-            throw new ErrorMessage(response, HttpStatus.ACCEPTED, "No bookings available in the database");
+            new ErrorMessage(response, "No bookings available in the database");
+            return null;
         }
         return bookings;
     }

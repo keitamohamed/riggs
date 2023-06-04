@@ -2,6 +2,8 @@ package com.keita.riggs.jwt_config;
 
 import com.keita.riggs.auth_detail.CustomAuthDetailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     private final CustomAuthDetailService customAuthDetailService;
+
+    @Bean
+    public HttpExchangeRepository httpExchangeRepository() {
+        return new InMemoryHttpExchangeRepository();
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
