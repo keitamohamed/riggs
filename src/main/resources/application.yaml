@@ -29,10 +29,12 @@ management:
     web:
       exposure:
         include: "*"
-      base-path: /riggs/admin
+      base-path: /admin
   endpoint:
     health:
       show-details: always
+  server:
+    port: 4500
 
 jwt:
   securityKey: '6E5A7234753778214125432A462D4A614E645267556B58703273357638792F42'

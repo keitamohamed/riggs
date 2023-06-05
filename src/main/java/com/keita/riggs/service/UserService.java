@@ -129,7 +129,7 @@ public class UserService {
 
     private void setAuthenticate(User user) {
         Authenticate authenticate = user.getAuth();
-        authenticate.setAuth(user);
+        authenticate.setUser(user);
         authenticate.setAuthID(Util.generateID(9999999));
         authenticate.setAccountNonExpired(true);
         authenticate.setAccountNotLocked(true);
