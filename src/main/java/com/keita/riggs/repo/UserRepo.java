@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface UserRepo extends CrudRepository<User, Long> {
-
     @Transactional
     @Query(value = "SELECT * FROM user", nativeQuery = true)
     List<User> getAllUser();
+
 }

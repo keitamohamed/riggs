@@ -1,11 +1,12 @@
 package com.keita.riggs.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+import java.util.Date;
 
 @Entity
 @Getter
@@ -17,13 +18,23 @@ public class Booking {
     @Id
     @Column(nullable = false)
     private long bookingID;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date bookDate;
+    @NotNull(message = "Enter move in date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date fromDate;
+    @NotNull(message = "Enter move out date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date toDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+
+    @JsonBackReference(value = "book")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "userID")
-    @JsonBackReference(value = "roomBook")
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "roomID")
+
     @JsonBackReference(value = "booking")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "roomID")
     private Room room;
 }

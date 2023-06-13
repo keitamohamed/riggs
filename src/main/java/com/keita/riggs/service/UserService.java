@@ -8,6 +8,7 @@ import com.keita.riggs.model.Address;
 import com.keita.riggs.model.Authenticate;
 import com.keita.riggs.model.User;
 import com.keita.riggs.repo.AddressRepo;
+import com.keita.riggs.repo.AuthenticateRepo;
 import com.keita.riggs.repo.UserRepo;
 import com.keita.riggs.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,12 +26,14 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepo userRepo;
+    private final AuthenticateRepo authenticateRepo;
     private final AddressRepo addressRepo;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepo userRepo, AddressRepo addressRepo, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, AuthenticateRepo authenticateRepo, AddressRepo addressRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.authenticateRepo = authenticateRepo;
         this.addressRepo = addressRepo;
         this.passwordEncoder = passwordEncoder;
     }
@@ -96,6 +99,12 @@ public class UserService {
                 .orElseThrow(() -> new ExceptHandler(HttpStatus.UNPROCESSABLE_ENTITY, response, message));
     }
 
+    public Optional<User> findUserByEmail(String email) {
+        Authenticate auth = authenticateRepo.findByEmail(email);
+        User user = auth.getUser();
+        return Optional.of(user);
+    }
+
     public List<User> userList(HttpServletResponse response) {
         List<User> users = userRepo.getAllUser();
         if (users.isEmpty()) {
@@ -142,4 +151,6 @@ public class UserService {
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
+
+
 }

@@ -1,12 +1,10 @@
 package com.keita.riggs.controller;
 
-import com.keita.riggs.model.Room;
 import com.keita.riggs.model.User;
 import com.keita.riggs.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -47,11 +45,8 @@ public class UserController {
             @Valid
             @RequestBody
             User user,
-            BindingResult bindingResult
-    )
-    {
+            BindingResult bindingResult) {
         return service.updateUser(user, bindingResult);
-
     }
 
     @GetMapping(path = {"/list"})
@@ -63,7 +58,10 @@ public class UserController {
     public Optional<User> findUserByID(@PathVariable Long id, HttpServletResponse response) {
         return service.findUserByID(id, response);
     }
-
+    @GetMapping(value = {"/find-by-email/{email}"})
+    public Optional<User> findUserByEmail(@PathVariable String email) {
+        return service.findUserByEmail(email);
+    }
     @DeleteMapping(
             path = {"/delete/{id}"}
     )

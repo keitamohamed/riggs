@@ -2,6 +2,7 @@ package com.keita.riggs.service;
 
 import com.keita.riggs.handler.ErrorMessage;
 import com.keita.riggs.handler.ExceptHandler;
+import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Booking;
 import com.keita.riggs.model.Room;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +34,11 @@ public class BookingService {
         this.userService = userService;
     }
 
-    public ResponseEntity<?> save (Booking booking, BindingResult bindingResult, HttpServletResponse servletResponse) {
+    public ResponseEntity<?> save (Booking booking, long userID, long roomID, BindingResult bindingResult, HttpServletResponse servletResponse) {
+
+        if (bindingResult.hasErrors()) {
+            return InvalidInput.userError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
 
         long bookingID = Util.generateID(9999999);
         while (isBookingExist(bookingID).isPresent()) {
@@ -40,20 +46,15 @@ public class BookingService {
         }
 
         booking.setBookingID(bookingID);
+        booking.setBookDate(new Date());
 
-        User user = userService.getUser(booking.getUser().getUserID(), servletResponse);
+        User user = userService.getUser(userID, servletResponse);
         booking.setUser(user);
 
-        Room room = roomService.getRoom(booking.getRoom().getRoomID(), servletResponse);
+        Room room = roomService.getRoom(roomID, servletResponse);
         booking.setRoom(room);
 
         Booking bookingResult = bookingRepo.save(booking);
-
-        user.addNewBooking(bookingResult);
-        room.addNewBooking(bookingResult);
-
-        userService.updateUser(user, bindingResult);
-        roomService.updateRoom(room, bindingResult);
 
         String message = String.format("New booking have been created with an id %s", bookingResult.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());

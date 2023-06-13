@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,25 +29,17 @@ public class User {
     private String phoneNum;
 
     @Valid
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "auth")
     private Authenticate auth;
 
     @Valid
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "address")
     private Address address;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "roomBook")
-    private List<Booking> roomBook;
-
-    public void addNewBooking(Booking booking) {
-        add(booking);
-    }
-
-    private void add(Booking booking) {
-        roomBook.add(booking);
-    }
+    @JsonManagedReference(value = "book")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Booking> book;
 
 }

@@ -28,20 +28,12 @@ public class Room {
     private String size;
 
     @Valid
-    @OneToOne(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "room")
     private RoomDetail room;
 
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference(value = "booking")
-    private List<Booking> bookings;
-
-    public void addNewBooking(Booking booking) {
-        add(booking);
-    }
-
-    private void add(Booking booking) {
-        bookings.add(booking);
-    }
+    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Booking> booking;
 
 }

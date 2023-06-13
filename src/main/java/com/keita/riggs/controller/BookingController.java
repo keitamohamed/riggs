@@ -26,17 +26,19 @@ public class BookingController {
     }
 
     @PostMapping(
-            path = {"/add"},
+            path = {"/add/{userID}/{roomID}"},
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> newBooking(
+            @PathVariable long userID,
+            @PathVariable long roomID,
             @Valid
             @RequestBody
             Booking booking,
             BindingResult bindingResult,
             HttpServletResponse servletResponse
     ) {
-        return bookingService.save(booking, bindingResult, servletResponse);
+        return bookingService.save(booking, userID, roomID, bindingResult, servletResponse);
     }
 
     @GetMapping(path = {"/find-by-id/{bookingID}"})
