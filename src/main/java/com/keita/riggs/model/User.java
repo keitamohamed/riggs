@@ -21,11 +21,11 @@ public class User {
     @Id
     @Column(nullable = false)
     private long userID;
-    @NotBlank(message = "Enter first name")
+    @NotBlank(message = "First name is required")
     private String firstName;
-    @NotBlank(message = "Enter last name")
+    @NotBlank(message = "Last name is required")
     private String lastName;
-    @NotBlank(message = "Enter phone number")
+    @NotBlank(message = "Phone number is required")
     private String phoneNum;
 
     @Valid

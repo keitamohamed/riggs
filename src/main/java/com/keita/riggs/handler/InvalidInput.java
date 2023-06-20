@@ -55,25 +55,28 @@ public class InvalidInput extends RuntimeException{
         message.put("status", status.name());
         message.put("code", String.valueOf(status.value()));
         int index = 0;
-        boolean userErrors = false;
+        boolean isAddressValid = true;
+        boolean isAuthValid = true;
         for (FieldError error : bindingResult.getFieldErrors()) {
             if (error.getField().contains("address")) {
-                String replace = error.getField().trim().replace("address["+ index + "].", "");
+                String replace = error.getField().trim().replace("address.", "");
                 addressError.put(replace, error.getDefaultMessage());
-                userErrors = true;
+                isAddressValid = false;
             }
             else if (error.getField().contains("auth")) {
-                String replace = error.getField().trim().replace("auth["+ index + "].", "");
+                System.out.println("Auth " + error.getField());
+                String replace = error.getField().trim().replace("auth.", "");
                 authError.put(replace, error.getDefaultMessage());
-                userErrors = true;
+                isAuthValid = false;
             }
             else {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             }
         }
-        if (userErrors && addressError.size() > 0) {
+        if (!isAddressValid) {
             errorMap.put("address", addressError);
-        } else if (userErrors && authError.size() > 0) {
+        }
+        if (!isAuthValid) {
             errorMap.put("auth", authError);
         }
         message.put("error", errorMap);

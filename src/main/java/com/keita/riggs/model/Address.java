@@ -18,14 +18,14 @@ public class Address {
     @Id
     @Column(nullable = false)
     private long id;
-    @NotBlank(message = "Enter street name")
+    @NotBlank(message = "Street address is required")
     private String street;
-    @NotBlank(message = "Enter city")
+    @NotBlank(message = "City is required")
     private String city;
-    @NotBlank(message = "Enter state")
+    @NotBlank(message = "State is required")
     private String state;
     @Size(min = 5, max = 5, message = "Zip code must be a five digit number")
-    @NotBlank(message = "Enter a zipcode")
+    @NotBlank(message = "Zipcode is required")
     private String zipcode;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

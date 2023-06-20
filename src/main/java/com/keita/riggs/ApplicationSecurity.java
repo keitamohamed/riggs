@@ -43,11 +43,11 @@ public class ApplicationSecurity {
     }
 
     private static final String[] PUBLIC_ACCESS = {
-            "/riggs/user/add"
+            "/riggs/user/add",
+            "/riggs/room/list"
     };
 
     private static final String[] PRIVATE_ACCESS = {
-            "/riggs/room/list",
             "/riggs/room/find-by-id/**",
             "/riggs/user/**",
             "/riggs/booking/add",
