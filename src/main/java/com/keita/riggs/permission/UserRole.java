@@ -29,7 +29,7 @@ public enum UserRole {
                         .stream()
                         .map(userPermission -> new SimpleGrantedAuthority(userPermission.getPermission()))
                         .collect(Collectors.toSet());
-        permission.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        permission.add(new SimpleGrantedAuthority("Role_" + this.name()));
         return permission;
     }
 
