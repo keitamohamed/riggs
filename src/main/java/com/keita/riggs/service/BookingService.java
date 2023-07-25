@@ -51,10 +51,10 @@ public class BookingService {
         User user = userService.getUser(userID, servletResponse);
         booking.setUser(user);
 
-        Room room = roomService.getRoom(roomID, servletResponse);
-        booking.setRoom(room);
-
+        Room findRoom = roomService.getRoom(roomID, servletResponse);
+        booking.addRoom(findRoom);
         Booking bookingResult = bookingRepo.save(booking);
+        roomService.upDateBooking(findRoom, bookingResult);
 
         String message = String.format("New booking have been created with an id %s", bookingResult.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
@@ -84,7 +84,17 @@ public class BookingService {
             return responseMessage1;
         }
         String message = String.format("Booking with an id %s have been deleted", id);
-        bookingRepo.delete(findBooking.get());
+        Booking booking = findBooking.get();
+
+        int index = 0;
+        List<Room> roomList = booking.getRooms();
+        while (roomList.size() > index) {
+            System.out.println(roomList.get(index).getRoomName());
+            roomService.upDateBooking(roomList.get(index), null);
+            index++;
+        }
+        System.out.println(booking.getBookDate());
+        bookingRepo.deleteBookingByBookingID(booking.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }

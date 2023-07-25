@@ -1,5 +1,6 @@
 package com.keita.riggs.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -28,12 +29,13 @@ public class Room {
     private String size;
 
     @Valid
-    @OneToOne(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "room")
-    private RoomDetail room;
+    @OneToOne(mappedBy = "detail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "detail")
+    private RoomDetail detail;
 
-    @JsonManagedReference(value = "booking")
-    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Booking> booking;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JsonBackReference(value = "rooms")
+    @JoinColumn(name = "bookingID")
+    private Booking rooms;
 
 }

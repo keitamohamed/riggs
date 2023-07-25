@@ -16,7 +16,7 @@ import lombok.Setter;
 @Table(name = "detail")
 public class RoomDetail {
     @Id
-    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @NotBlank(message = "Enter room view")
     private String view;
@@ -35,6 +35,6 @@ public class RoomDetail {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "roomID")
-    @JsonBackReference(value = "room")
-    private Room room;
+    @JsonBackReference(value = "detail")
+    private Room detail;
 }

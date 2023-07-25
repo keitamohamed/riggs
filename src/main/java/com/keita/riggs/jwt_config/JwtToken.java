@@ -70,7 +70,6 @@ public class JwtToken {
 
     public String getJwtFormRequest(HttpServletRequest request) {
         String authorization = request.getHeader(securityConfig.getAuthorizationHeader());
-        System.out.println(authorization);
         if (StringUtils.hasText(authorization) && authorization.startsWith(securityConfig.getTokenPrefix() + " ")) {
             return (authorization.replace(securityConfig.getTokenPrefix(),"").replaceAll("\\s+", ""));
         }

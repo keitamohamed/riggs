@@ -4,6 +4,7 @@ import com.keita.riggs.handler.ErrorMessage;
 import com.keita.riggs.handler.ExceptHandler;
 import com.keita.riggs.handler.InvalidInput;
 import com.keita.riggs.mapper.ResponseMessage;
+import com.keita.riggs.model.Booking;
 import com.keita.riggs.model.Room;
 import com.keita.riggs.repo.RoomDetailRepo;
 import com.keita.riggs.repo.RoomRepo;
@@ -56,7 +57,7 @@ public class RoomService {
             return InvalidInput.roomError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        roomDetailRepo.save(room.getRoom());
+        roomDetailRepo.save(room.getDetail());
 
         result.ifPresent(room1 -> {
             room1.setRoomName(room.getRoomName());
@@ -100,6 +101,11 @@ public class RoomService {
         Optional<Room> findRoom = isRoomExist(id);
         String message = String.format("No room exist with an id %s ", id);
         return findRoom.orElseThrow(() -> new ExceptHandler(HttpStatus.OK, response, message));
+    }
+
+    public Room upDateBooking(Room room, Booking booking) {
+        room.setRooms(booking);
+        return roomRepo.save(room);
     }
 
     public ResponseEntity<?> deleteRoom (Long id) {
