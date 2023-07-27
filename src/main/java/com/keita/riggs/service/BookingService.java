@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class BookingService {
         this.userService = userService;
     }
 
-    public ResponseEntity<?> save (Booking booking, long userID, long roomID, BindingResult bindingResult, HttpServletResponse servletResponse) {
+    public ResponseEntity<?> save (Booking booking, long userID, BindingResult bindingResult, HttpServletResponse servletResponse) {
 
         if (bindingResult.hasErrors()) {
             return InvalidInput.userError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -51,10 +52,23 @@ public class BookingService {
         User user = userService.getUser(userID, servletResponse);
         booking.setUser(user);
 
-        Room findRoom = roomService.getRoom(roomID, servletResponse);
-        booking.addRoom(findRoom);
+        Room findRoom;
+        int index = 0;
+        List<Room> roomList = new ArrayList<>();
+
+        while (booking.getRooms().size() > index) {
+            System.out.println("ID " + booking.getRooms().get(index).getRoomID());
+            Room r = booking.getRooms().get(index);
+            findRoom = roomService.getRoom(r.getRoomID(), servletResponse);
+            roomList.add(findRoom);
+            index++;
+        }
+
+        booking.setRooms(roomList);
         Booking bookingResult = bookingRepo.save(booking);
-        roomService.upDateBooking(findRoom, bookingResult);
+
+        roomList.forEach(r -> roomService.upDateBooking(r, bookingResult));
+
 
         String message = String.format("New booking have been created with an id %s", bookingResult.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
