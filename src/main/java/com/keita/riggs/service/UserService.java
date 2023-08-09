@@ -92,6 +92,24 @@ public class UserService {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
+    public ResponseEntity<?> updateAuth(Authenticate auth) {
+        Optional<Authenticate> findAuth = isUserAuthExist(auth.getAuthID());
+        ResponseEntity<ResponseMessage> responseMessage1 = userDoesNotExist(auth.getAuthID());
+        if (findAuth.isEmpty()) {
+            return responseMessage1;
+        }
+
+        findAuth.ifPresent(a -> {
+            a.setPassword(passwordEncoder.encode(auth.getPassword()));
+        });
+
+        Authenticate updated = authenticateRepo.save(findAuth.get());
+        String message = String.format("Successfully updated login information id: %s", updated.getAuthID());
+        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+
     public Optional<User> findUserByID (Long id, HttpServletResponse response) {
         String message = "No user found with an id " + id;
         return userRepo.findById(id)
@@ -128,6 +146,10 @@ public class UserService {
 
     private Optional<User> isUserExist(Long id) {
         return userRepo.findById(id);
+    }
+
+    private Optional<Authenticate> isUserAuthExist(Long id) {
+        return authenticateRepo.findById(id);
     }
 
     public User getUser(Long id, HttpServletResponse response) {

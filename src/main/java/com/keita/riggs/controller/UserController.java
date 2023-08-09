@@ -1,5 +1,6 @@
 package com.keita.riggs.controller;
 
+import com.keita.riggs.model.Authenticate;
 import com.keita.riggs.model.User;
 import com.keita.riggs.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +48,16 @@ public class UserController {
             User user,
             BindingResult bindingResult) {
         return service.updateUser(user, bindingResult);
+    }
+
+    @PutMapping(
+            path = {"/update-auth/{id}"},
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<?> updateUserAuth(
+            @RequestBody
+            Authenticate authenticate) {
+        return service.updateAuth(authenticate);
     }
 
     @GetMapping(path = {"/list"})

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.util.Arrays.stream;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
@@ -62,7 +62,7 @@ public class JwtCustomAuthorizationFilter extends OncePerRequestFilter {
             JWTVerifier verifier = JWT.require(algorithm).build();
             return verifier.verify(token);
         }catch (Exception exception) {
-            response.setStatus(FORBIDDEN.value());
+            response.setStatus(UNAUTHORIZED.value());
 
             Map<String, String> error = new HashMap<>();
             error.put("error", exception.getMessage());
