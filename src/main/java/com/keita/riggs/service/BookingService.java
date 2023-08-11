@@ -57,7 +57,6 @@ public class BookingService {
         List<Room> roomList = new ArrayList<>();
 
         while (booking.getRooms().size() > index) {
-            System.out.println("ID " + booking.getRooms().get(index).getRoomID());
             Room r = booking.getRooms().get(index);
             findRoom = roomService.getRoom(r.getRoomID(), servletResponse);
             roomList.add(findRoom);

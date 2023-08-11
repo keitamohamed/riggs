@@ -21,16 +21,16 @@ public class BookingController {
     private final BookingService bookingService;
 
     @Autowired
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
+    public BookingController(BookingService bookingService) {this.bookingService = bookingService;
     }
 
     @PostMapping(
-            path = {"/add/{userID}"},
+            value = {"/add/{userID}"},
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> newBooking(
-            @PathVariable long userID,
+            @PathVariable
+            long userID,
             @Valid
             @RequestBody
             Booking booking,
