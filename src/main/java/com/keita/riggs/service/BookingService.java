@@ -69,7 +69,7 @@ public class BookingService {
         roomList.forEach(r -> roomService.upDateBooking(r, bookingResult));
 
 
-        String message = String.format("New booking have been created with an id %s", bookingResult.getBookingID());
+        String message = String.format("New booking have been created #%s", bookingResult.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
@@ -96,17 +96,15 @@ public class BookingService {
         if (findBooking.isEmpty()) {
             return responseMessage1;
         }
-        String message = String.format("Booking with an id %s have been deleted", id);
+        String message = String.format("Booking #%s deleted successfully", id);
         Booking booking = findBooking.get();
 
         int index = 0;
         List<Room> roomList = booking.getRooms();
         while (roomList.size() > index) {
-            System.out.println(roomList.get(index).getRoomName());
             roomService.upDateBooking(roomList.get(index), null);
             index++;
         }
-        System.out.println(booking.getBookDate());
         bookingRepo.deleteBookingByBookingID(booking.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
