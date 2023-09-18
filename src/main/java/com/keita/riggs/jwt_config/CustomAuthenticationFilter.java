@@ -1,21 +1,17 @@
 package com.keita.riggs.jwt_config;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keita.riggs.auth_detail.UserAuthDetail;
-import com.keita.riggs.handler.CustomCredentialInputCheck;
+import com.keita.riggs.exception.CustomCredentialInputCheck;
 import com.keita.riggs.model.Authenticate;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,8 +20,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.security.Key;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,13 +51,13 @@ public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationF
             }
             return authenticationManager.authenticate(authentication);
         }catch (IOException e) {
-            throw new CustomCredentialInputCheck("You have entered an invalid username or password", HttpStatus.UNAUTHORIZED, response);
+            throw new CustomCredentialInputCheck("Invalid username or password", HttpStatus.UNAUTHORIZED, response);
         }
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        throw new CustomCredentialInputCheck("You have entered an invalid username or password", HttpStatus.UNAUTHORIZED, response);
+        throw new CustomCredentialInputCheck("Invalid username or password", HttpStatus.UNAUTHORIZED, response);
     }
 
     @Override

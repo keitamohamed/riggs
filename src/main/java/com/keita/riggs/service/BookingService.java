@@ -1,8 +1,7 @@
 package com.keita.riggs.service;
 
-import com.keita.riggs.handler.ErrorMessage;
-import com.keita.riggs.handler.ExceptHandler;
-import com.keita.riggs.handler.InvalidInput;
+import com.keita.riggs.exception.NotFoundException;
+import com.keita.riggs.exception.UnprocessableDataException;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Booking;
 import com.keita.riggs.model.Room;
@@ -38,7 +37,7 @@ public class BookingService {
     public ResponseEntity<?> save (Booking booking, long userID, BindingResult bindingResult, HttpServletResponse servletResponse) {
 
         if (bindingResult.hasErrors()) {
-            return InvalidInput.userError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new UnprocessableDataException("Unable to Register User", bindingResult);
         }
 
         long bookingID = Util.generateID(9999999);
@@ -49,7 +48,7 @@ public class BookingService {
         booking.setBookingID(bookingID);
         booking.setBookDate(new Date());
 
-        User user = userService.getUser(userID, servletResponse);
+        User user = userService.getUser(userID);
         booking.setUser(user);
 
         Room findRoom;
@@ -58,7 +57,7 @@ public class BookingService {
 
         while (booking.getRooms().size() > index) {
             Room r = booking.getRooms().get(index);
-            findRoom = roomService.getRoom(r.getRoomID(), servletResponse);
+            findRoom = roomService.getRoom(r.getRoomID());
             roomList.add(findRoom);
             index++;
         }
@@ -66,7 +65,7 @@ public class BookingService {
         booking.setRooms(roomList);
         Booking bookingResult = bookingRepo.save(booking);
 
-        roomList.forEach(r -> roomService.upDateBooking(r, bookingResult));
+        roomList.forEach(r -> roomService.updateBooking(r, bookingResult));
 
 
         String message = String.format("New booking have been created #%s", bookingResult.getBookingID());
@@ -75,34 +74,30 @@ public class BookingService {
     }
 
     public Optional<Booking> findBookingByID (Long id, HttpServletResponse response) {
-        String message = "No booking found with an id " + id;
         return bookingRepo.findById(id)
                 .map(Optional::of)
-                .orElseThrow(() -> new ExceptHandler(HttpStatus.UNPROCESSABLE_ENTITY, response, message));
+                .orElseThrow(() -> new NotFoundException("No booking found with an id " + id));
     }
 
-    public List<Booking> bookingList(HttpServletResponse response) {
+    public List<Booking> bookingList() {
         List<Booking> bookings = bookingRepo.getAllBookingr();
         if (bookings.isEmpty()) {
-            new ErrorMessage(response, "No bookings available in the database");
-            return null;
+            throw new NotFoundException("No bookings available in the database");
         }
         return bookings;
     }
 
     public ResponseEntity<?> deleteBooking (Long id) {
         Optional<Booking> findBooking = isBookingExist(id);
-        ResponseEntity<ResponseMessage> responseMessage1 = bookingDoesNotExist(id);
-        if (findBooking.isEmpty()) {
-            return responseMessage1;
-        }
+        findBooking.orElseThrow(() -> new NotFoundException("No booking exist with an id " + id));
+
         String message = String.format("Booking #%s deleted successfully", id);
         Booking booking = findBooking.get();
 
         int index = 0;
         List<Room> roomList = booking.getRooms();
         while (roomList.size() > index) {
-            roomService.upDateBooking(roomList.get(index), null);
+            roomService.updateBooking(roomList.get(index), null);
             index++;
         }
         bookingRepo.deleteBookingByBookingID(booking.getBookingID());
@@ -112,12 +107,6 @@ public class BookingService {
 
     public Optional<Booking> isBookingExist(Long id) {
         return bookingRepo.findById(id);
-    }
-
-    private static ResponseEntity<ResponseMessage> bookingDoesNotExist(Long id) {
-        String message = String.format("No booking exist with an id %s", id);
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.keita.riggs.handler;
+package com.keita.riggs.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;

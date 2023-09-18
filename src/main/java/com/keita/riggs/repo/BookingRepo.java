@@ -16,6 +16,6 @@ public interface BookingRepo extends CrudRepository<Booking, Long> {
     @Query("DELETE FROM Booking b WHERE b.bookingID = :id")
     void deleteBookingByBookingID(@Param("id") long id);
     @Transactional
-    @Query(value = "SELECT * FROM booking", nativeQuery = true)
+    @Query(value = "SELECT * FROM booking AS b", nativeQuery = true)
     List<Booking> getAllBookingr();
 }

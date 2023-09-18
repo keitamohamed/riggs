@@ -61,8 +61,8 @@ public class UserController {
     }
 
     @GetMapping(path = {"/list"})
-    public List<User> userList(HttpServletResponse response) {
-        return service.userList(response);
+    public List<User> userList() {
+        return service.userList();
     }
 
     @GetMapping(value = {"/find-by-id/{id}"})

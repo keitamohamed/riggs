@@ -1,8 +1,7 @@
 package com.keita.riggs.service;
 
-import com.keita.riggs.handler.ErrorMessage;
-import com.keita.riggs.handler.ExceptHandler;
-import com.keita.riggs.handler.InvalidInput;
+import com.keita.riggs.exception.NotFoundException;
+import com.keita.riggs.exception.UnprocessableRoomDataException;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Booking;
 import com.keita.riggs.model.Room;
@@ -31,9 +30,9 @@ public class RoomService {
         this.roomDetailRepo = roomDetailRepo;
     }
 
-    public ResponseEntity<?> save (Room room, BindingResult result) {
-        if (result.hasErrors()) {
-            return InvalidInput.roomError(result, HttpStatus.UNPROCESSABLE_ENTITY);
+    public ResponseEntity<?> save (Room room, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new UnprocessableRoomDataException("Unable to add new room", bindingResult);
         }
         long roomID = Util.generateID(9999999);
         while (isRoomExist(roomID).isPresent()) {
@@ -47,26 +46,23 @@ public class RoomService {
     }
 
     public ResponseEntity<?> updateRoom(Room room, BindingResult bindingResult) {
-        Optional<Room> result = isRoomExist(room.getRoomID());
-        ResponseEntity<ResponseMessage> responseMessage1 = roomDoesNotExist(room.getRoomID());
-        if (result.isEmpty()) {
-            return responseMessage1;
-        }
+        Optional<Room> getRoom = isRoomExist(room.getRoomID());
+        getRoom.orElseThrow(() -> new NotFoundException(String.format("No room exist with an id %s", room.getRoomID())));
 
         if (bindingResult.hasErrors()) {
-            return InvalidInput.roomError(bindingResult, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new UnprocessableRoomDataException("Unable to update room information", bindingResult);
         }
 
         roomDetailRepo.save(room.getDetail());
 
-        result.ifPresent(room1 -> {
+        getRoom.ifPresent(room1 -> {
             room1.setRoomName(room.getRoomName());
             room1.setSize(room.getSize());
             room1.setDescription(room.getDescription());
 
         });
 
-        Room updated = roomRepo.save(result.get());
+        Room updated = roomRepo.save(getRoom.get());
         String message = String.format("%s room with an id %s have been updated", updated.getRoomName(), updated.getRoomID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
@@ -78,18 +74,16 @@ public class RoomService {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    public Optional<Room> findRoomByID (Long id, HttpServletResponse response) {
-        String message = "No room found with an id " + id;
+    public Optional<Room> findRoomByID (Long id) {
         return roomRepo.findById(id)
                 .map(Optional::of)
-                .orElseThrow(() -> new ExceptHandler(HttpStatus.UNPROCESSABLE_ENTITY, response, message));
+                .orElseThrow(() -> new NotFoundException("No room found with an id " + id));
     }
 
     public List<Room> list(HttpServletResponse response) {
         List<Room> rooms = roomRepo.getAllRoom();
         if (rooms.isEmpty()) {
-            new ErrorMessage(response, "No data available in the database");
-            return null;
+            throw new NotFoundException("No data available in the database");
         }
         return rooms;
     }
@@ -97,28 +91,24 @@ public class RoomService {
         return roomRepo.findById(id);
     }
 
-    public Room getRoom(Long id, HttpServletResponse response) {
+    public Room getRoom(Long id) {
         Optional<Room> findRoom = isRoomExist(id);
-        String message = String.format("No room exist with an id %s ", id);
-        return findRoom.orElseThrow(() -> new ExceptHandler(HttpStatus.OK, response, message));
+        return findRoom.orElseThrow(() -> new NotFoundException(String.format("No room exist with an id %s ", id)));
     }
 
-    public Room upDateBooking(Room room, Booking booking) {
+    public Room updateBooking(Room room, Booking booking) {
         room.setRooms(booking);
         return roomRepo.save(room);
     }
 
     public ResponseEntity<?> deleteRoom (Long id) {
         Optional<Room> findRoom = isRoomExist(id);
-        ResponseEntity<ResponseMessage> responseMessage1 = roomDoesNotExist(id);
-        if (findRoom.isEmpty()) {
-            return responseMessage1;
-        }
+        findRoom.orElseThrow(() -> new NotFoundException(String.format("No room exist with an id %s", id)));
+
         String message = String.format("%s with an id %s have been deleted", findRoom.get().getRoomName(), id);
         roomRepo.delete(findRoom.get());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
-
 
 }

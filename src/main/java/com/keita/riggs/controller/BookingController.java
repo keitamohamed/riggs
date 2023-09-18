@@ -50,8 +50,8 @@ public class BookingController {
     }
 
     @GetMapping(path = {"/list-of-booking"})
-    public List<Booking> bookingList(HttpServletResponse servletResponse) {
-        return bookingService.bookingList(servletResponse);
+    public List<Booking> bookingList() {
+        return bookingService.bookingList();
     }
 
     @DeleteMapping(

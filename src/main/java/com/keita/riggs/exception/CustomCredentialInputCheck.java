@@ -1,4 +1,4 @@
-package com.keita.riggs.handler;
+package com.keita.riggs.exception;
 
 import com.keita.riggs.model.Authenticate;
 import jakarta.servlet.http.HttpServletResponse;

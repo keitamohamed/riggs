@@ -58,8 +58,8 @@ public class RoomController {
     }
 
     @GetMapping(value = {"/find-by-id/{id}"})
-    public Optional<Room> findRoomByID(@PathVariable Long id, HttpServletResponse response) {
-        return service.findRoomByID(id, response);
+    public Optional<Room> findRoomByID(@PathVariable Long id) {
+        return service.findRoomByID(id);
     }
 
     @DeleteMapping(

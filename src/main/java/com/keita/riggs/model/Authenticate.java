@@ -17,7 +17,7 @@ public class Authenticate {
     @Id
     private Long authID;
     @Email
-    @Column(updatable = false, unique = true)
+    @Column(unique = true)
     @NotBlank(message = "Email address is required")
     private String email;
     @Column(columnDefinition = "LONGBLOB")

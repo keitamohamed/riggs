@@ -6,17 +6,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface AuthenticateRepo extends CrudRepository<Authenticate, Long> {
 
     Authenticate findByEmail(String email);
 
-
-//    @Query(
-//            value = "SELECT * " +
-//                    "FROM authenticate as a " +
-//                    "WHERE a.email = :email", nativeQuery = true
-//    )
-//    Authenticate findUserByEmail(@Param("email") String email);
-
+    @Transactional
+    @Query(value = "SELECT * FROM authenticate AS auth WHERE auth.email = :email", nativeQuery = true)
+    Optional<Authenticate> findAuthenticateByEmail(@Param("email") String email);
 
 }

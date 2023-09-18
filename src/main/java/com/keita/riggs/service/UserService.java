@@ -1,8 +1,8 @@
 package com.keita.riggs.service;
 
-import com.keita.riggs.handler.ErrorMessage;
-import com.keita.riggs.handler.InvalidInput;
-import com.keita.riggs.handler.ExceptHandler;
+import com.keita.riggs.exception.AlreadyExistsException;
+import com.keita.riggs.exception.NotFoundException;
+import com.keita.riggs.exception.UnprocessableDataException;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Address;
 import com.keita.riggs.model.Authenticate;
@@ -38,10 +38,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<?> save (User user, BindingResult result) {
-        if (result.hasErrors()) {
-            return InvalidInput.userError(result, HttpStatus.UNPROCESSABLE_ENTITY);
+    public ResponseEntity<?> save (User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new UnprocessableDataException("Unable to Register User", bindingResult);
         }
+
+        authenticateRepo.findAuthenticateByEmail(user.getAuth().getEmail())
+                .ifPresent(u -> {throw new AlreadyExistsException(String.format("Email already exist { %s }", user.getAuth().getEmail()));});
+
         long userID = Util.generateID(9999999);
         while (isUserExist(userID).isPresent()) {
             userID = Util.generateID(9999999);
@@ -67,15 +71,12 @@ public class UserService {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updateUser(User user, BindingResult result) {
+    public ResponseEntity<?> updateUser(User user, BindingResult bindingResult) {
         Optional<User> getUser = isUserExist(user.getUserID());
-        ResponseEntity<ResponseMessage> responseMessage1 = userDoesNotExist(user.getUserID());
-        if (getUser.isEmpty()) {
-            return responseMessage1;
-        }
+        getUser.orElseThrow(() -> new NotFoundException(String.format("No user exist with an id %s", user.getUserID())));
 
-        if (result.hasErrors()) {
-            return InvalidInput.userError(result, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (bindingResult.hasErrors()) {
+            throw new UnprocessableDataException("Unable to update information", bindingResult);
         }
 
         getUser.ifPresent(u -> {
@@ -94,10 +95,7 @@ public class UserService {
 
     public ResponseEntity<?> updateAuth(Authenticate auth) {
         Optional<Authenticate> findAuth = isUserAuthExist(auth.getAuthID());
-        ResponseEntity<ResponseMessage> responseMessage1 = userDoesNotExist(auth.getAuthID());
-        if (findAuth.isEmpty()) {
-            return responseMessage1;
-        }
+        findAuth.orElseThrow(() -> new NotFoundException(String.format("No Authenticate account found with id %s", auth.getAuthID())));
 
         findAuth.ifPresent(a -> {
             a.setPassword(passwordEncoder.encode(auth.getPassword()));
@@ -111,10 +109,9 @@ public class UserService {
 
 
     public Optional<User> findUserByID (Long id, HttpServletResponse response) {
-        String message = "No user found with an id " + id;
         return userRepo.findById(id)
                 .map(Optional::of)
-                .orElseThrow(() -> new ExceptHandler(HttpStatus.UNPROCESSABLE_ENTITY, response, message));
+                .orElseThrow(() -> new NotFoundException("No user found with an id " + id));
     }
 
     public Optional<User> findUserByEmail(String email) {
@@ -123,20 +120,18 @@ public class UserService {
         return Optional.of(user);
     }
 
-    public List<User> userList(HttpServletResponse response) {
+    public List<User> userList() {
         List<User> users = userRepo.getAllUser();
         if (users.isEmpty()) {
-            new ErrorMessage(response, "No user available in the database");
+            throw new NotFoundException("No user available in the database");
         }
         return users;
     }
 
     public ResponseEntity<?> deleteUser (Long id) {
         Optional<User> findUser = isUserExist(id);
-        ResponseEntity<ResponseMessage> responseMessage1 = userDoesNotExist(id);
-        if (findUser.isEmpty()) {
-            return responseMessage1;
-        }
+        findUser.orElseThrow(() -> new NotFoundException(String.format("No user exist with an id %s", id)));
+
         String message = String.format("%s with an id %s have been deleted",
                 (findUser.get().getFirstName() + " " + findUser.get().getLastName()), id);
         userRepo.delete(findUser.get());
@@ -152,10 +147,9 @@ public class UserService {
         return authenticateRepo.findById(id);
     }
 
-    public User getUser(Long id, HttpServletResponse response) {
+    public User getUser(Long id) {
         Optional<User> user = isUserExist(id);
-        String message = String.format("No user exist with an id %s ", id);
-        return user.orElseThrow(() -> new ExceptHandler(HttpStatus.OK, response, message));
+        return user.orElseThrow(() -> new NotFoundException(String.format("No user exist with an id %s ", id)));
     }
 
     private void setAuthenticate(User user) {
@@ -167,12 +161,5 @@ public class UserService {
         authenticate.setCredentialsNonExpired(true);
         authenticate.setEnabled(true);
     }
-
-    private static ResponseEntity<ResponseMessage> userDoesNotExist(Long id) {
-        String message = String.format("No user exist with an id %s", id);
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.NOT_FOUND.name(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-    }
-
 
 }
