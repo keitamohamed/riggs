@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +29,9 @@ public class Room {
     private String description;
     @NotBlank(message = "Enter room size")
     private String size;
+    @DecimalMin(value = "60.0", message = "Room start at $60 a night")
+    @DecimalMax(value = "1000.00", message = "Room price must be $1000.00 or less a night")
+    private double price;
 
     @Valid
     @OneToOne(mappedBy = "detail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

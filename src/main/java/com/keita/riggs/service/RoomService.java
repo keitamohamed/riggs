@@ -59,7 +59,7 @@ public class RoomService {
             room1.setRoomName(room.getRoomName());
             room1.setSize(room.getSize());
             room1.setDescription(room.getDescription());
-
+            room1.setPrice(room1.getPrice());
         });
 
         Room updated = roomRepo.save(getRoom.get());

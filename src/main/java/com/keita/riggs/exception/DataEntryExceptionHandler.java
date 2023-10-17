@@ -77,8 +77,10 @@ public class DataEntryExceptionHandler {
         int index = 0;
         boolean roomErrors = false;
         for (FieldError error : e.getBindingResult().getFieldErrors()) {
-            if (error.getField().contains("room")) {
-                String replace = error.getField().trim().replace("room["+ index + "].", "");
+            String replace;
+            System.out.println(error.getField() + ": " + error.getDefaultMessage());
+            if (error.getField().contains("detail")) {
+                replace = error.getField().trim().replace("detail.", "");
                 roomError.put(replace, error.getDefaultMessage());
                 count += 1;
                 roomErrors = true;
@@ -91,7 +93,7 @@ public class DataEntryExceptionHandler {
             }
         }
         if (roomErrors) {
-            errorMap.put("room", roomError);
+            errorMap.put("detail", roomError);
         }
         map.put("error", errorMap);
 

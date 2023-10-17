@@ -3,6 +3,7 @@ package com.keita.riggs.service;
 import com.keita.riggs.exception.AlreadyExistsException;
 import com.keita.riggs.exception.NotFoundException;
 import com.keita.riggs.exception.UnprocessableDataException;
+import com.keita.riggs.export.UserExcel;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Address;
 import com.keita.riggs.model.Authenticate;
@@ -19,6 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +92,8 @@ public class UserService {
             u.setPhoneNum(user.getPhoneNum());
         });
 
+
+
         addressRepo.save(user.getAddress());
 
         User updated = userRepo.save(getUser.get());
@@ -137,6 +146,11 @@ public class UserService {
         userRepo.delete(findUser.get());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+    public ByteArrayInputStream generateUserExcelFile() throws IOException {
+        UserExcel userExcel = new UserExcel(userList());
+        return userExcel.toExcel();
     }
 
     private Optional<User> isUserExist(Long id) {

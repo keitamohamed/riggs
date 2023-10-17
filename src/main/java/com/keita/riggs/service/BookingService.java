@@ -34,7 +34,7 @@ public class BookingService {
         this.userService = userService;
     }
 
-    public ResponseEntity<?> save (Booking booking, long userID, BindingResult bindingResult, HttpServletResponse servletResponse) {
+    public ResponseEntity<?> save (Booking booking, BindingResult bindingResult, HttpServletResponse servletResponse) {
 
         if (bindingResult.hasErrors()) {
             throw new UnprocessableDataException("Unable to Register User", bindingResult);
@@ -48,7 +48,7 @@ public class BookingService {
         booking.setBookingID(bookingID);
         booking.setBookDate(new Date());
 
-        User user = userService.getUser(userID);
+        User user = userService.getUser(booking.getUser().getUserID());
         booking.setUser(user);
 
         Room findRoom;
@@ -59,6 +59,7 @@ public class BookingService {
             Room r = booking.getRooms().get(index);
             findRoom = roomService.getRoom(r.getRoomID());
             roomList.add(findRoom);
+            booking.getPrices().get(index).setBookingPrice(r.getPrice());
             index++;
         }
 
@@ -66,7 +67,6 @@ public class BookingService {
         Booking bookingResult = bookingRepo.save(booking);
 
         roomList.forEach(r -> roomService.updateBooking(r, bookingResult));
-
 
         String message = String.format("New booking have been created #%s", bookingResult.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());

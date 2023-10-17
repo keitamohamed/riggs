@@ -4,12 +4,18 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -34,13 +40,15 @@ public class Booking {
     @Min(value = 1, message = "Number of adult must be equal or greater than 18")
     private int numAdult;
     private int numChildren;
-
+    @Valid
+    @JsonManagedReference(value = "prices")
+    @OneToMany(mappedBy = "prices", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<BookingPrice> prices;
 
     @JsonBackReference(value = "book")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "userID")
     private User user;
-
 
     @JsonManagedReference(value = "rooms")
     @OneToMany(mappedBy = "rooms", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

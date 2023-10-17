@@ -26,9 +26,9 @@ public class RoomDetail {
     private String animal;
     @NotBlank(message = "Is smoking allow in the room")
     private String smoking;
-    @NotBlank(message = "Bathroom desc")
+    @NotBlank(message = "Bathroom description")
      private String bathroom;
-    @NotBlank(message = "Does room have tv")
+    @NotBlank(message = "Does this room have tv")
     private String tv;
     @NotBlank(message = "Enter number of bed")
     private String numberOfBed;

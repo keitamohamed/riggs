@@ -37,7 +37,7 @@ public class BookingController {
             BindingResult bindingResult,
             HttpServletResponse servletResponse
     ) {
-        return bookingService.save(booking, userID, bindingResult, servletResponse);
+        return bookingService.save(booking, bindingResult, servletResponse);
     }
 
     @GetMapping(path = {"/find-by-id/{bookingID}"})

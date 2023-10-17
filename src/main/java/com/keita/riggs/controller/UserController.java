@@ -1,17 +1,28 @@
 package com.keita.riggs.controller;
 
+import com.keita.riggs.export.UserExcel;
 import com.keita.riggs.model.Authenticate;
 import com.keita.riggs.model.User;
 import com.keita.riggs.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -62,10 +73,11 @@ public class UserController {
 
     @GetMapping(path = {"/list"})
     public List<User> userList() {
+        System.out.println("User list...");
         return service.userList();
     }
 
-    @GetMapping(value = {"/find-by-id/{id}"})
+    @GetMapping(path = {"/find-by-id/{id}"})
     public Optional<User> findUserByID(@PathVariable Long id, HttpServletResponse response) {
         return service.findUserByID(id, response);
     }
@@ -80,4 +92,21 @@ public class UserController {
         return service.deleteUser(id);
     }
 
+    @GetMapping(
+            path = {"/user-excel-file"}
+    )
+    public ResponseEntity<Resource> userExcelFile() throws IOException {
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy_MM_dd");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String fileName = currentDateTime + "_Riggs-User-Data.xlsx";
+
+        ByteArrayInputStream excelData = service.generateUserExcelFile();
+        InputStreamResource file = new InputStreamResource(excelData);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("application/force-download"))
+                .body(file);
+    }
 }
