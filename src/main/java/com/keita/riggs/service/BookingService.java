@@ -4,8 +4,10 @@ import com.keita.riggs.exception.NotFoundException;
 import com.keita.riggs.exception.UnprocessableDataException;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Booking;
+import com.keita.riggs.model.BookingPrice;
 import com.keita.riggs.model.Room;
 import com.keita.riggs.model.User;
+import com.keita.riggs.repo.BookingPriceRepo;
 import com.keita.riggs.repo.BookingRepo;
 import com.keita.riggs.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,12 +28,14 @@ public class BookingService {
     private final BookingRepo bookingRepo;
     private final RoomService roomService;
     private final UserService userService;
+    private final BookingPriceRepo bookingPriceRepo;
 
     @Autowired
-    public BookingService(BookingRepo bookingRepo, RoomService roomService, UserService userService) {
+    public BookingService(BookingRepo bookingRepo, RoomService roomService, UserService userService, BookingPriceRepo bookingPriceRepo) {
         this.bookingRepo = bookingRepo;
         this.roomService = roomService;
         this.userService = userService;
+        this.bookingPriceRepo = bookingPriceRepo;
     }
 
     public ResponseEntity<?> save (Booking booking, BindingResult bindingResult, HttpServletResponse servletResponse) {
@@ -59,10 +63,8 @@ public class BookingService {
             Room r = booking.getRooms().get(index);
             findRoom = roomService.getRoom(r.getRoomID());
             roomList.add(findRoom);
-            booking.getPrices().get(index).setBookingPrice(r.getPrice());
             index++;
         }
-
         booking.setRooms(roomList);
         Booking bookingResult = bookingRepo.save(booking);
 
@@ -96,10 +98,23 @@ public class BookingService {
 
         int index = 0;
         List<Room> roomList = booking.getRooms();
+
         while (roomList.size() > index) {
             roomService.updateBooking(roomList.get(index), null);
             index++;
         }
+
+        index = 0;
+        List<BookingPrice> bookingPrices = booking.getPrices();
+        while (bookingPrices.size() > index) {
+            BookingPrice bookingPrice = bookingPrices.get(index);
+            bookingPrice.setPrices(null);
+            bookingPriceRepo.save(bookingPrice);
+            index++;
+        }
+
+        bookingPrices.forEach(e -> bookingPriceRepo.deleteBookingPriceById(e.getId()));
+
         bookingRepo.deleteBookingByBookingID(booking.getBookingID());
         ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);

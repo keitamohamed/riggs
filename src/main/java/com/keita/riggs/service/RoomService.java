@@ -4,6 +4,7 @@ import com.keita.riggs.exception.NotFoundException;
 import com.keita.riggs.exception.UnprocessableRoomDataException;
 import com.keita.riggs.mapper.ResponseMessage;
 import com.keita.riggs.model.Booking;
+import com.keita.riggs.model.BookingPrice;
 import com.keita.riggs.model.Room;
 import com.keita.riggs.repo.RoomDetailRepo;
 import com.keita.riggs.repo.RoomRepo;
