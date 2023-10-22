@@ -18,9 +18,9 @@ spring:
     show-sql: true
     generate-ddl: true
   datasource:
-    url: ${DB_HOST}
-    username: ${DB_USER}
-    password: ${DB_PW}
+    url: jdbc:mysql://mysql-riggs:3306
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/riggs
 #    username: root
