@@ -17,12 +17,12 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
     generate-ddl: true
+    database: mysql
   datasource:
     url: jdbc:mysql-vuby:3306
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
-    oracleucp:
-      database-name: mysql
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 
 #  datasource:
