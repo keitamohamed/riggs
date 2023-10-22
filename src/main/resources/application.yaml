@@ -19,12 +19,9 @@ spring:
     generate-ddl: true
     database: mysql
   datasource:
-    url: jdbc://mysql-riggs:3306
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-
+    url: jdbc:mysql://roundhouse.proxy.rlwy.net:12005/railway
+    username: root
+    password: nffepjyd5c4nydde$b9-$1wyvm0qjvac
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/riggs
 #    username: root
