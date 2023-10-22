@@ -18,9 +18,13 @@ spring:
     show-sql: true
     generate-ddl: true
   datasource:
-    url: jdbc:mysql-riggs:3306
+    url: jdbc:mysql-vuby:3306
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
+    oracleucp:
+      database-name: mysql
+
+
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/riggs
 #    username: root
