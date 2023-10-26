@@ -41,9 +41,7 @@ public class ApplicationSecurity {
 
     private static final String[] PUBLIC_ACCESS = {
             "/",
-            "/*.jpg",
-            "/*.svg",
-            "/*.html",
+            "/*.*",
             "/favicon.ico",
             "/static/favicon.ico",
             "/static/*.html",

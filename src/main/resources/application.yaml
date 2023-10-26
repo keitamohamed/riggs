@@ -17,14 +17,14 @@ spring:
     show-sql: true
     generate-ddl: true
     database: mysql
-  datasource:
-    url: jdbc:mysql://roundhouse.proxy.rlwy.net:12005/railway
-    username: root
-    password: nffepjyd5c4nydde$b9-$1wyvm0qjvac
 #  datasource:
-#    url: jdbc:mysql://localhost:3306/riggs
+#    url: jdbc:mysql://roundhouse.proxy.rlwy.net:12005/railway
 #    username: root
-#    password: developer
+#    password: nffepjyd5c4nydde$b9-$1wyvm0qjvac
+  datasource:
+    url: jdbc:mysql://localhost:3306/riggs
+    username: root
+    password: developer
 
 management:
   info:
