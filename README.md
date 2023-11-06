@@ -1,20 +1,26 @@
 
 ## Riggs 
-Riggs is a Spring boot and React application that allow you to make Hotel Reservation. 
-With Riggs, you can register and make a reservation, it also allows you to edit your information 
-and delete your booking.
+Spring boot and React application that allow you to make Hotel Reservation.
 
-## Database
+#### Website [Demo](https://riggs.up.railway.app)
+
+### Overview
+* This project is a simple Hotel Reservation `RESTFUL API` designed to create User, hotels and associated reservations
+* `ADMIN` can create a `User, Rooms, Booking` and `Delete`.
+* `User` can only `Update info and make` booking.
+* Project follows a standard `User <-> Controller <-> Validation` (interacts with Controllers) `<-> Services <-> Repository <-> Database` API Schema
+
+### Database
  * The database structure contains seven tables, a `User, Address, Authenticate, Room, RoomDetail, Booking` and  `BookingPrice` table.
- * `User` table contains user info such name, phone number `Address, Authenticate` and `booking` tables.
- * `Address` table that contains user address
- * `Authenticate` table that contains user login and user role
- * `Room` table that contains room name, size, price etc
- * `RoomDetail` table that contains room details
- * `Booking` table, contains booking details such as date room etc
+ * [`User`](#user-api) table contains user info such name, phone number `Address, Authenticate` and `booking` tables. 
+ * `Address` table contains user address
+ * `Authenticate` table contains user login and user role
+ * [`Room`](#room-api) table contains room name, size, price etc
+ * `RoomDetail` table contains room details
+ * [`Booking`](#booking-api) table, contains booking details such as date room etc
  * `BookingPrice` table, contains booking price
 
-## Tech Stack
+### Tech Stack
 * Backend API Creation
   * Java
   * Spring Boot [Link](https://spring.io/projects/spring-boot) 
@@ -29,8 +35,9 @@ and delete your booking.
   * Redux [Link](https://redux.js.org/introduction/getting-started)
   * Axios
   * Swiperjs [Link](https://swiperjs.com)
-## Explore USER Rest APIS
-* User API
+  
+### Explore USER Rest APIS
+##### User API
 
 | Method |             Endpoint              |           Description           | API Call                                      |
 |:-------|:---------------------------------:|:-------------------------------:|-----------------------------------------------|
@@ -99,8 +106,8 @@ and delete your booking.
     ```
     ***Email address cannot be updated and is Unique***
 
-## Explore Room Rest APIS
-*   Room API
+### Explore Room Rest APIS
+##### Room API
 
 | Method |          Endpoint           |          Description          | API Call                             |
 |:-------|:---------------------------:|:-----------------------------:|--------------------------------------|
@@ -154,8 +161,8 @@ and delete your booking.
         }
   ````
 
-## Explore Booking Rest APIS
-*   Booking API
+### Explore Booking Rest APIS
+##### Booking API
 
 | Method |              Endpoint              |             Description              | API Call                           |
 |:-------|:----------------------------------:|:------------------------------------:|------------------------------------|
