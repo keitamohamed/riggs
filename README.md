@@ -29,37 +29,170 @@ and delete your booking.
   * Redux [Link](https://redux.js.org/introduction/getting-started)
   * Axios
   * Swiperjs [Link](https://swiperjs.com)
-## Explore Rest APIS
+## Explore USER Rest APIS
 * User API
 
-| Method |             Endpoint              |                     Description | API Call |
-|:-------|:---------------------------------:|--------------------------------:|----------|
-| POST   |          /riggs/user/add          |               Register new user |          |
-| PUT    |      /riggs/user/update/{id}      |        Updated an existing user |          |
-| PUT    |   /riggs/user/update-auth/{id}    |  Updated an existing user login |          |
-| GET    |    /riggs/user/find-by-id/{id}    |     Find an existing user by id |          |
-| GET    | /riggs/user/find-by-email/{email} |  Find an existing user by email |          |
-| GET    |         /riggs/user/list          |  Get list of all existing users |          |
-| GET    |    /riggs/user/user-excel-file    |       Download users excel file |          |
-| DELETE |      /riggs/user/delete/{id}      | Delete a specified user account |          |
+| Method |             Endpoint              |           Description           | API Call                                      |
+|:-------|:---------------------------------:|:-------------------------------:|-----------------------------------------------|
+| POST   |          /riggs/user/add          |        Register new user        | [Register New User](#register-new-user)       |
+| PUT    |      /riggs/user/update/{id}      |    Updated an existing user     | [Update Existing User](#update-existing-user) |
+| PUT    |   /riggs/user/update-auth/{id}    | Updated an existing user login  | [Update User Login](#update-user-login)       |
+| GET    |    /riggs/user/find-by-id/{id}    |   Find an existing user by id   | [Find user by id](#find-user-by-id)           |
+| GET    | /riggs/user/find-by-email/{email} | Find an existing user by email  | [Find user by email](#find-user-by-email)     |
+| GET    |         /riggs/user/list          | Get list of all existing users  | [User list](#get-user-list)                   |
+| GET    |    /riggs/user/user-excel-file    |    Download users excel file    | [Download User excel file](#user-excel-file)  |
+| DELETE |      /riggs/user/delete/{id}      | Delete a specified user account | [Delete user](#delete-user-by-id)             |
 
+#### Register New User 
+  * Validation (Throws an invalidRequestException) when:
+    + firstNme is `null`
+    + lastName is `null`
+    + phoneNum is `null`
+    + address object is `null` or `missing validation requirement`
+    + auth (authenticate object) is `is null` or `missing validation requirement`
+  * Request Body
+    ```json
+        {
+          "firstName": "",
+          "lastName": "",
+          "phoneNum": "",
+          "address": {
+              "street": "",
+              "city": "",
+              "state": "",
+              "zipcode":  ""
+          },
+          "auth": {
+              "email": "",
+              "password": "",
+              "role": ""
+          }
+        }
+    ```
+#### Update Existing User
+* Validation (Throws an invalidRequestException) when:
+    + userID is `null`
+    + firstNme is `null`
+    + lastName is `null`
+    + phoneNum is `null`
+    + address object is `null` or `missing validation requirement`
+* Request Body
+  ```json
+      {
+        "userID": 0,
+        "firstName": "",
+        "lastName": "",
+        "phoneNum": "",
+        "address": {}
+      }
+  ```
+#### Update User Login
+* Validation (Throws an invalidRequestException) when:
+    + authID is `null`
+    + password is `null`
+* Request Body
+    ```json
+          {
+            "authID": 0,
+            "email": ""
+          }
+    ```
+    ***Email address cannot be updated and is Unique***
 
+## Explore Room Rest APIS
 *   Room API
 
-| Method |          Endpoint           |                   Description | API Call |
-|:-------|:---------------------------:|------------------------------:|----------|
-| POST   |       /riggs/room/add       |               Create new room |          |
-| PUT    |   /riggs/room/update/{id}   |      Updated an existing room |          |
-| GET    | /riggs/room/find-by-id/{id} |         Find an existing room |          |
-| GET    |      /riggs/room/list       | Get list of all existing room |          |
-| DELETE |   /riggs/room/delete/{id}   |       Delete an existing room |          |
+| Method |          Endpoint           |          Description          | API Call                             |
+|:-------|:---------------------------:|:-----------------------------:|--------------------------------------|
+| POST   |       /riggs/room/add       |        Create new room        | [Create Room](#create-new-room)      |
+| PUT    |   /riggs/room/update/{id}   |   Updated an existing room    | [Update room](#update-existing-room) |
+| GET    | /riggs/room/find-by-id/{id} |     Find an existing room     |                                      |
+| GET    |      /riggs/room/list       | Get list of all existing room |                                      |
+| DELETE |   /riggs/room/delete/{id}   |    Delete an existing room    |                                      |
 
+#### Create New Room
+*   Validation (Throws) when:
+    + roomName is `null`
+    + description is `null`
+    + size is `null`
+    + price is `null`
+    + detail (RoomDetail) object is `null` or `missing validation requirement` 
+  * Request Body
+      ````json
+          {
+            "roomName": "",
+            "description": "",
+            "size": "",
+            "price": 0,
+            "detail": {
+                "bed": "",
+                "numberOfBed": "",
+                "view": "",
+                "smoking": "",
+                "bathroom": "",
+                "tv": "",
+               "animal": ""
+            }
+          }
+    ````
+#### Update Existing Room
+*   Validation (Throws) when:
+    + roomID is `null`
+    + roomName is `null`
+    + description is `null`
+    + size is `null`
+    + price is `null`
+    + detail (RoomDetail) object is `null` or `invalidate requirements`
+* Request Body
+    ````json
+        {
+          "roomName": "",
+          "description": "",
+          "size": "",
+          "price": 0,
+          "detail": {}
+        }
+  ````
+
+## Explore Booking Rest APIS
 *   Booking API
 
-| Method |              Endpoint              |                          Description | API Call |
-|:-------|:----------------------------------:|-------------------------------------:|----------|
-| POST   |    /riggs/booking/add/{userid}     | Create new booking for existing user |          |
-| GET    |   /riggs/booking/find-by-d/{id}    |             Find an existing booking |          |
-| GET    |    /riggs/room/list-of-booking     |     Get list of all existing booking |          |
-| DELETE | /riggs/booking/delete-booking/{id} |           Delete an existing booking |          |
+| Method |              Endpoint              |             Description              | API Call                           |
+|:-------|:----------------------------------:|:------------------------------------:|------------------------------------|
+| POST   |    /riggs/booking/add/{userid}     | Create new booking for existing user | [New Booking](#create-new-booking) |
+| GET    |   /riggs/booking/find-by-d/{id}    |       Find an existing booking       |                                    |
+| GET    |    /riggs/room/list-of-booking     |   Get list of all existing booking   |                                    |
+| DELETE | /riggs/booking/delete-booking/{id} |      Delete an existing booking      |                                    |
 
+#### Create New Booking
+*   Validation (Throws) when:
+    + arrDate is `null`
+    + depDate is `null`
+    + numRoom is `0`
+    + numAdult is `0`
+    + user object is `null` or `missing userID`
+    + rooms list is `empty`
+    + prices (booking prices) list is `empty`
+* Request Body
+    ````json
+        {
+          "arrDate": "YYYY-MM-DD",
+          "depDate": "YYYY-MM-DD",
+          "numRoom": 0,
+          "numAdult": 0,
+          "numChildren": 0,
+          "user": {
+            "userID": 0
+          },
+          "rooms": [
+            {
+             "roomID": 0
+            }
+          ],
+          "prices": [
+            {
+              "price":  0
+            }
+          ]
+      }
+  ````
