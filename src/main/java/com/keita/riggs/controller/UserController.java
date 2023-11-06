@@ -70,7 +70,6 @@ public class UserController {
 
     @GetMapping(path = {"/list"})
     public List<User> userList() {
-        System.out.println("User list...");
         return service.userList();
     }
 
