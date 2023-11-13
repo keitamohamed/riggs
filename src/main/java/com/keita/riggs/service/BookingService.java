@@ -71,7 +71,7 @@ public class BookingService {
         roomList.forEach(r -> roomService.updateBooking(r, bookingResult));
 
         String message = String.format("New booking have been created #%s", bookingResult.getBookingID());
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        ResponseMessage responseMessage = new ResponseMessage(bookingResult.getBookingID(), message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
@@ -116,7 +116,7 @@ public class BookingService {
         bookingPrices.forEach(e -> bookingPriceRepo.deleteBookingPriceById(e.getId()));
 
         bookingRepo.deleteBookingByBookingID(booking.getBookingID());
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        ResponseMessage responseMessage = new ResponseMessage(booking.getBookingID(), message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 

@@ -1,9 +1,9 @@
 package com.keita.riggs;
 
-import com.keita.riggs.jwt_config.CustomAuthenticationFilter;
-import com.keita.riggs.jwt_config.JwtCustomAuthorizationFilter;
-import com.keita.riggs.jwt_config.JwtToken;
-import com.keita.riggs.jwt_config.SecurityConfig;
+import com.keita.riggs.config.CustomAuthenticationFilter;
+import com.keita.riggs.config.JwtCustomAuthorizationFilter;
+import com.keita.riggs.config.JwtToken;
+import com.keita.riggs.config.JwtSecurityToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,14 +22,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ApplicationSecurity {
 
     private final AuthenticationProvider authenticationProvider;
-    private final SecurityConfig securityConfig;
+    private final JwtSecurityToken securityConfig;
     private final JwtToken jwtToken;
     private final JwtCustomAuthorizationFilter jwtCustomAuthorizationFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Autowired
     public ApplicationSecurity(AuthenticationProvider authenticationProvider,
-                               SecurityConfig securityConfig, JwtToken jwtToken,
+                               JwtSecurityToken securityConfig, JwtToken jwtToken,
                                JwtCustomAuthorizationFilter jwtCustomAuthorizationFilter,
                                AuthenticationConfiguration authenticationConfiguration) {
         this.authenticationProvider = authenticationProvider;
@@ -48,6 +48,7 @@ public class ApplicationSecurity {
             "/static/**",
             "/assets/*.*",
             "/riggs/user/add",
+            "/riggs/room/download-image/*",
             "/riggs/room/list",
     };
 

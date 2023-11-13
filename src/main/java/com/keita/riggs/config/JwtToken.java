@@ -1,4 +1,4 @@
-package com.keita.riggs.jwt_config;
+package com.keita.riggs.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 @Component
 public class JwtToken {
 
-    private final SecurityConfig securityConfig;
+    private final JwtSecurityToken securityConfig;
 
     @Autowired
-    public JwtToken(SecurityConfig securityConfig) {
+    public JwtToken(JwtSecurityToken securityConfig) {
         this.securityConfig = securityConfig;
     }
 

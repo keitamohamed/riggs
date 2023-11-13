@@ -43,4 +43,8 @@ public class Room {
     @JoinColumn(name = "bookingID")
     private Booking rooms;
 
+    @OneToMany(mappedBy = "image", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "image")
+    private List<ImagePath> image;
+
 }

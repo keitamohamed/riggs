@@ -74,7 +74,7 @@ public class UserService {
         User saveResult = userRepo.save(user);
 
         String message = String.format("New account have been created %s ", saveResult.getUserID());
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        ResponseMessage responseMessage = new ResponseMessage(saveResult.getUserID(), message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
@@ -98,7 +98,7 @@ public class UserService {
 
         User updated = userRepo.save(getUser.get());
         String message = String.format("Information updated for %s, id %s", (updated.getFirstName() + " " + updated.getLastName()), updated.getUserID());
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        ResponseMessage responseMessage = new ResponseMessage(updated.getUserID(), message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
@@ -112,7 +112,7 @@ public class UserService {
 
         Authenticate updated = authenticateRepo.save(findAuth.get());
         String message = String.format("Successfully updated login information id: %s", updated.getAuthID());
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        ResponseMessage responseMessage = new ResponseMessage(updated.getAuthID(), message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
@@ -144,7 +144,7 @@ public class UserService {
         String message = String.format("%s with an id %s have been deleted",
                 (findUser.get().getFirstName() + " " + findUser.get().getLastName()), id);
         userRepo.delete(findUser.get());
-        ResponseMessage responseMessage = new ResponseMessage(message, HttpStatus.OK.name(), HttpStatus.OK.value());
+        ResponseMessage responseMessage = new ResponseMessage(id, message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 

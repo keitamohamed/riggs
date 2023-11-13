@@ -1,4 +1,4 @@
-package com.keita.riggs.jwt_config;
+package com.keita.riggs.config;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,11 +27,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class CustomAuthenticationFilter  extends UsernamePasswordAuthenticationFilter {
 
-    private final SecurityConfig securityConfig;
+    private final JwtSecurityToken securityConfig;
     private final JwtToken jwtToken;
     private final AuthenticationManager authenticationManager;
 
-    public CustomAuthenticationFilter(SecurityConfig securityConfig, JwtToken jwtToken, AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(JwtSecurityToken securityConfig, JwtToken jwtToken, AuthenticationManager authenticationManager) {
         super(authenticationManager);
         this.securityConfig = securityConfig;
         this.jwtToken = jwtToken;

@@ -1,4 +1,4 @@
-package com.keita.riggs.jwt_config;
+package com.keita.riggs.config;
 
 import com.keita.riggs.auth_detail.CustomAuthDetailService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.keita.riggs.jwt_config;
+package com.keita.riggs.config;
 
 import com.google.common.net.HttpHeaders;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.Date;
 @ConfigurationProperties(prefix = "jwt")
 @Getter
 @Setter
-public class SecurityConfig {
+public class JwtSecurityToken {
 
     private String securityKey;
     private String tokenPrefix;

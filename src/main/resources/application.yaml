@@ -45,3 +45,7 @@ jwt:
   accessTokenExpirationDate: 86400000
   refreshTokenExpirationDate: 604800000
 
+resources:
+  userImageFolder: "src/main/resources/image/user/"
+  roomImageFolder: "src/main/resources/image/room/"
+

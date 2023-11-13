@@ -1,4 +1,4 @@
-package com.keita.riggs.jwt_config;
+package com.keita.riggs.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -28,10 +28,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 public class JwtCustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private final SecurityConfig securityConfig;
+    private final JwtSecurityToken securityConfig;
     private final JwtToken jwtToken;
 
-    public JwtCustomAuthorizationFilter(SecurityConfig securityConfig, JwtToken jwtToken) {
+    public JwtCustomAuthorizationFilter(JwtSecurityToken securityConfig, JwtToken jwtToken) {
         this.securityConfig = securityConfig;
         this.jwtToken = jwtToken;
     }
