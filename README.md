@@ -3,6 +3,16 @@
 Spring boot and React application that allow you to make Hotel Reservation.
 
 #### Website [Demo](https://riggs.up.railway.app)
+###### You can test the App using one of flowing login credential 
+
+
+|        Username         |           Password            | Role  |
+|:-----------------------:|:-----------------------------:|:-----:|
+|   developer@gmail.com   |       developertesting        | Admin |
+| whardypigging0@yale.edu |            !2hardy            | Admin |
+|    tteal1@eepurl.com    |            tealt71            | User  |
+
+***Please do not add too many data as I am paying monthly subscription to host the app***
 
 ### Overview
 * This project is a simple Hotel Reservation `RESTFUL API` designed to create User, hotels and associated reservations

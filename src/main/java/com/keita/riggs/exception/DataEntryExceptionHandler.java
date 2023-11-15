@@ -15,7 +15,7 @@ import java.util.Map;
 public class DataEntryExceptionHandler {
 
     @ExceptionHandler(value = {UnprocessableDataException.class})
-    public ResponseEntity<Object> userRegistrationNotProcess(UnprocessableDataException e) {
+    public ResponseEntity<Object> userRegistrationNotProcess(UnprocessableDataException e) throws NoSuchFieldException {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aa").format(new Date());
 

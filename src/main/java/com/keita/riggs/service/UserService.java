@@ -107,11 +107,12 @@ public class UserService {
         findAuth.orElseThrow(() -> new NotFoundException(String.format("No Authenticate account found with id %s", auth.getAuthID())));
 
         findAuth.ifPresent(a -> {
+            a.setRole(a.getRole().toUpperCase());
             a.setPassword(passwordEncoder.encode(auth.getPassword()));
         });
 
         Authenticate updated = authenticateRepo.save(findAuth.get());
-        String message = String.format("Successfully updated login information id: %s", updated.getAuthID());
+        String message = "Successfully updated login information";
         ResponseMessage responseMessage = new ResponseMessage(updated.getAuthID(), message, HttpStatus.OK.name(), HttpStatus.OK.value());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
@@ -169,6 +170,7 @@ public class UserService {
     private void setAuthenticate(User user) {
         Authenticate authenticate = user.getAuth();
         authenticate.setUser(user);
+        authenticate.setRole(authenticate.getRole().toUpperCase());
         authenticate.setAuthID(Util.generateID(9999999));
         authenticate.setAccountNonExpired(true);
         authenticate.setAccountNotLocked(true);

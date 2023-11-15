@@ -35,7 +35,7 @@ public class CustomAuthDetailService implements UserDetailsService {
     }
 
     private Set<SimpleGrantedAuthority> grantedAuthorities(Authenticate authenticate) {
-        if (authenticate.getRole().equals("USER")) {
+        if (authenticate.getRole().equalsIgnoreCase("USER")) {
             return USER.grantedAuthorities();
         }
         return ADMIN.grantedAuthorities();

@@ -22,7 +22,6 @@ import java.util.Optional;
 public class RoomController {
 
     private final RoomService service;
-    private final String DIR_PATH = "src/main/resources/image/";
 
     @Autowired
     public RoomController(RoomService service) {
