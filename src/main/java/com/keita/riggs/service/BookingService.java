@@ -38,7 +38,7 @@ public class BookingService {
         this.bookingPriceRepo = bookingPriceRepo;
     }
 
-    public ResponseEntity<?> save (Booking booking, BindingResult bindingResult, HttpServletResponse servletResponse) {
+    public ResponseEntity<?> save (long userID, Booking booking, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new UnprocessableDataException("Unable to Register User", bindingResult);
@@ -52,7 +52,7 @@ public class BookingService {
         booking.setBookingID(bookingID);
         booking.setBookDate(new Date());
 
-        User user = userService.getUser(booking.getUser().getUserID());
+        User user = userService.getUser(userID);
         booking.setUser(user);
 
         Room findRoom;
