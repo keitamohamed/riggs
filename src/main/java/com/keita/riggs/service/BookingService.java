@@ -3,10 +3,7 @@ package com.keita.riggs.service;
 import com.keita.riggs.exception.NotFoundException;
 import com.keita.riggs.exception.UnprocessableDataException;
 import com.keita.riggs.mapper.ResponseMessage;
-import com.keita.riggs.model.Booking;
-import com.keita.riggs.model.BookingPrice;
-import com.keita.riggs.model.Room;
-import com.keita.riggs.model.User;
+import com.keita.riggs.model.*;
 import com.keita.riggs.repo.BookingPriceRepo;
 import com.keita.riggs.repo.BookingRepo;
 import com.keita.riggs.util.Util;
@@ -17,10 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.Month;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -87,6 +83,15 @@ public class BookingService {
             throw new NotFoundException("No bookings available in the database");
         }
         return bookings;
+    }
+
+    public List<ChartMonthlyTarget> chartMonthlyTargets () {
+        List<ChartMonthlyTarget> chartMonthlyTargetList = new ArrayList<>();
+        List<String> monthList = Arrays.stream(Month.values())
+                .map(Month::toString)
+                .toList();
+        monthList.forEach(m -> chartMonthlyTargetList.add((new ChartMonthlyTarget(m.substring(0, 3), 0, 0))));
+        return chartMonthlyTargetList;
     }
 
     public ResponseEntity<?> deleteBooking (Long id) {

@@ -1,6 +1,7 @@
 package com.keita.riggs.controller;
 
 import com.keita.riggs.model.Booking;
+import com.keita.riggs.model.ChartMonthlyTarget;
 import com.keita.riggs.service.BookingService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -21,7 +22,8 @@ public class BookingController {
     private final BookingService bookingService;
 
     @Autowired
-    public BookingController(BookingService bookingService) {this.bookingService = bookingService;
+    public BookingController(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
 
     @PostMapping(
@@ -46,6 +48,11 @@ public class BookingController {
             HttpServletResponse servletResponse
     ) {
         return bookingService.findBookingByID(bookingID, servletResponse);
+    }
+
+    @GetMapping(path = {"/chartMonthlyTargets"})
+    public List<ChartMonthlyTarget> chartMonthlyTargets() {
+        return bookingService.chartMonthlyTargets();
     }
 
     @GetMapping(path = {"/list-of-booking"})
