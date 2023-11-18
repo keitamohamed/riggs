@@ -91,7 +91,28 @@ public class BookingService {
                 .map(Month::toString)
                 .toList();
         monthList.forEach(m -> chartMonthlyTargetList.add((new ChartMonthlyTarget(m.substring(0, 3), 0, 0))));
-        return chartMonthlyTargetList;
+
+        List<Booking> bookingList = bookingList();
+
+        return combinePrice(chartMonthlyTargetList, bookingList, monthList);
+    }
+
+    private List<ChartMonthlyTarget> combinePrice(List<ChartMonthlyTarget> monthlyTargets, List<Booking> bookings, List<String> months) {
+        bookings.sort(Comparator.comparing(Booking::getBookDate));
+        for (Booking booking : bookings) {
+            Calendar calendar = Util.getDate(booking.getBookDate());
+            int month = calendar.get(Calendar.MONTH);
+            booking.getPrices().forEach(p -> System.out.println(p.getPrice()));
+            double total = booking.getPrices().stream().mapToDouble(BookingPrice::getPrice).sum();
+            for (int in = 1; in < bookings.size(); in++) {
+                int m = Util.getDate(bookings.get(in).getBookDate()).get(Calendar.MONTH);
+                if (month == m) {
+                    total += bookings.get(in).getPrices().stream().mapToDouble(BookingPrice::getPrice).sum();
+                }
+            }
+            monthlyTargets.get(month).setAmount(total);
+        }
+        return monthlyTargets;
     }
 
     public ResponseEntity<?> deleteBooking (Long id) {

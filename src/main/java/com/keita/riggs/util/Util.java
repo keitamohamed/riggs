@@ -1,10 +1,8 @@
 package com.keita.riggs.util;
 
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Util {
@@ -14,6 +12,11 @@ public class Util {
         return (long) random.nextInt(bound);
     }
 
+    public static Calendar getDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
+    }
     public static List<Month> getMonths() {
 //        691-03-7965
         List<Month> monthList = new ArrayList<>();
